@@ -1,1 +1,1 @@
-This is main branch with a source code.
+This is **doc_artifacts** branch for documentation zip downloads.
