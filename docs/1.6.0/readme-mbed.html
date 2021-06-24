@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>MCUboot port for Mbed OS &mdash; MCUboot 1.7.99 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/nordic.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/common.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/mcuboot.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+  <script type="text/javascript" src="_static/js/ncs.js"></script>
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <link rel="shortcut icon" href="_static/images/favicon.ico"/>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="wrapper.html" class="icon icon-home"> MCUboot
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.7.99
+              </div>
+            
+          
+
+          
+<div id="searchbox" role="search">
+  <div class="searchformwrapper">
+    <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+  </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">MCUboot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">MCUboot Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Boot Loader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecdsa.html">ECDSA signature format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encrypted_images.html">Encrypted images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imgtool.html">Image tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme-zephyr.html">Building and using MCUboot with Zephyr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme-ncs.html">Using MCUboot in nRF Connect SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubmittingPatches.html">Submitting Patches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubmittingPatches.html#developer-certificate-of-origin">Developer Certificate of Origin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testplan-zephyr.html">Zephyr Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SECURITY.html">MCUboot project security policy</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="wrapper.html">MCUboot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="wrapper.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>MCUboot port for Mbed OS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/readme-mbed.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mcuboot-port-for-mbed-os">
+<h1>MCUboot port for Mbed OS<a class="headerlink" href="#mcuboot-port-for-mbed-os" title="Permalink to this headline">¶</a></h1>
+<p>This is an MCUboot port for Mbed OS.</p>
+<div class="section" id="using-mcuboot">
+<h2>Using MCUboot<a class="headerlink" href="#using-mcuboot" title="Permalink to this headline">¶</a></h2>
+<p>Note: The following is a general overview. It does not cover MCUboot or Mbed OS basics.</p>
+<p>See https://github.com/AGlass0fMilk/mbed-mcuboot-demo as a detailed example.</p>
+<div class="section" id="basic-configurations">
+<h3>Basic configurations<a class="headerlink" href="#basic-configurations" title="Permalink to this headline">¶</a></h3>
+<p>To use MCUboot, you need to create an Mbed OS project with the following configurations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.primary-slot-address&quot;</span></code>: address of the primary slot in the internal flash</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.slot-size&quot;</span></code>: size of an image slot (only one image, two slots are currently supported)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.max-img-sectors&quot;</span></code>: maximum number of sectors, should be at least the number of sectors in each slot</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;target.restrict_size&quot;</span></code>: the maximum size of the bootloader, such that it does not overlap with the primary slot</p></li>
+</ul>
+<p>More configurations such as signing algorithm, slot swapping, etc. can be found in <a class="reference external" href="https://github.com/mcu-tools/mcuboot/tree/main/boot/mbed/mbed_lib.json">mbed_lib.json</a>. Please note that certain features are not currently supported.</p>
+</div>
+<div class="section" id="providing-a-secondary-slot">
+<h3>Providing a secondary slot<a class="headerlink" href="#providing-a-secondary-slot" title="Permalink to this headline">¶</a></h3>
+<p>You need to provide an instance of <code class="docutils literal notranslate"><span class="pre">mbed::BlockDevice</span></code> as the secondary slot. It can be any types of internal or external storage provided that:</p>
+<ul class="simple">
+<li><p>Its size equals the <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.slot-size&quot;</span></code> you have set</p></li>
+<li><p>Its minimum supported read and write sizes (granularities) are <em>no larger than</em> 16 byte, which MCUboot’s read/write operations are aligned to. If the read size is larger than <em>one byte</em>, you need to set <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.read-granularity&quot;</span></code> to the read size of the storage - this buffers smaller read operations.</p></li>
+</ul>
+<p>In order for MCUboot to access your secondary slot, the interface to implement is</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mbed</span><span class="o">::</span><span class="n">BlockDevice</span><span class="o">*</span> <span class="nf">get_secondary_bd</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>which should return an uninitialized instance of BlockDevice.</p>
+</div>
+<div class="section" id="building-the-bootloader">
+<h3>Building the bootloader<a class="headerlink" href="#building-the-bootloader" title="Permalink to this headline">¶</a></h3>
+<p>To build a bootloader based on MCUboot, make sure <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.bootloader-build&quot;</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> (already the default) and you have provided configurations and a secondary slot BlockDevice as explained above.</p>
+</div>
+<div class="section" id="building-a-user-application">
+<h3>Building a user application<a class="headerlink" href="#building-a-user-application" title="Permalink to this headline">¶</a></h3>
+<p>To build a user application, set <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.bootloader-build&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code> so MCUboot is built as a <em>library only</em> without a bootloader application. This is useful if your user application needs to confirm the current image with <code class="docutils literal notranslate"><span class="pre">boot_set_confirmed()</span></code> after an update, or set a new image in the secondary slot as pending with <code class="docutils literal notranslate"><span class="pre">boot_set_pending()</span></code> in order to trigger an update upon reboot.</p>
+<p>As your application starts in the primary slots (instead of the beginning of the whole flash), you need to set the start address (<code class="docutils literal notranslate"><span class="pre">&quot;target.mbed_app_start&quot;</span></code>) to be equal to <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.primary-slot-address&quot;</span></code> + <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.header-size&quot;</span></code> of your bootloader. And its size (<code class="docutils literal notranslate"><span class="pre">&quot;target.mbed_app_size&quot;</span></code>) must be no larger than <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.slot-size&quot;</span></code> - <code class="docutils literal notranslate"><span class="pre">&quot;mcuboot.header-size&quot;</span></code>, and some space must be left for the image trailer too (see <a class="reference external" href="design.md#image-trailer">this</a>).</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+
+<table>
+<tr>
+<td>
+    <p>
+        &copy; Copyright 2019-2021.
+      Last updated on Jun 24, 2021.
+
+    </p>
+</td>
+<td id="nordiclogo">
+  <a href="https://www.nordicsemi.com/"><img src="_static/images/nordic.svg" border="0"/></a>
+</td>
+</tr>
+</table>
+  </div> 
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> MCUboot</span>
+       <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <div class="rst-other-version ncs">
+        <a href="./../nrf/index.html">nRF Connect SDK</a>
+      </div>
+      
+      <div class="rst-other-version nrfx">
+        <a href="./../nrfx/index.html">nrfx</a>
+      </div>
+      
+      <div class="rst-other-version nrfxlib">
+        <a href="./../nrfxlib/README.html">nrfxlib</a>
+      </div>
+      
+      <div class="rst-other-version zephyr">
+        <a href="./../zephyr/index.html">Zephyr Project</a>
+      </div>
+      
+      <div class="rst-other-version kconfig">
+        <a href="./../kconfig/index.html">Kconfig Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

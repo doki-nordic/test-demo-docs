@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Encrypted images &mdash; MCUboot 1.7.99 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/nordic.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/common.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/mcuboot.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+  <script type="text/javascript" src="_static/js/ncs.js"></script>
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Image tool" href="imgtool.html" />
+    <link rel="prev" title="ECDSA signature format" href="ecdsa.html" />
+  <link rel="shortcut icon" href="_static/images/favicon.ico"/>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="wrapper.html" class="icon icon-home"> MCUboot
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.7.99
+              </div>
+            
+          
+
+          
+<div id="searchbox" role="search">
+  <div class="searchformwrapper">
+    <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+  </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">MCUboot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">MCUboot Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Boot Loader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecdsa.html">ECDSA signature format</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Encrypted images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#threat-model">Threat model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ecies-encryption">ECIES encryption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#upgrade-process">Upgrade process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-your-keys-with-imgtool">Creating your keys with imgtool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-your-keys-with-unix-tooling">Creating your keys with Unix tooling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="imgtool.html">Image tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme-zephyr.html">Building and using MCUboot with Zephyr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme-ncs.html">Using MCUboot in nRF Connect SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubmittingPatches.html">Submitting Patches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubmittingPatches.html#developer-certificate-of-origin">Developer Certificate of Origin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testplan-zephyr.html">Zephyr Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SECURITY.html">MCUboot project security policy</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="wrapper.html">MCUboot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="wrapper.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Encrypted images</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/encrypted_images.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <!--
+    -
+    - Licensed to the Apache Software Foundation (ASF) under one
+    - or more contributor license agreements.  See the NOTICE file
+    - distributed with this work for additional information
+    - regarding copyright ownership.  The ASF licenses this file
+    - to you under the Apache License, Version 2.0 (the
+    - "License"); you may not use this file except in compliance
+    - with the License.  You may obtain a copy of the License at
+    -
+    -  http://www.apache.org/licenses/LICENSE-2.0
+    -
+    - Unless required by applicable law or agreed to in writing,
+    - software distributed under the License is distributed on an
+    - "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    - KIND, either express or implied.  See the License for the
+    - specific language governing permissions and limitations
+    - under the License.
+    -
+--><div class="section" id="encrypted-images">
+<h1>Encrypted images<a class="headerlink" href="#encrypted-images" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="rationale">
+<h2><a class="reference external" href="#rationale">Rationale</a><a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>To provide confidentiality of image data while in transport to the
+device or while residing on an external flash, <code class="docutils literal notranslate"><span class="pre">MCUBoot</span></code> has support
+for encrypting/decrypting images on-the-fly while upgrading.</p>
+<p>The image header needs to flag this image as <code class="docutils literal notranslate"><span class="pre">ENCRYPTED</span></code> (0x04) and
+a TLV with the key must be present in the image. When upgrading the
+image from the <code class="docutils literal notranslate"><span class="pre">secondary</span> <span class="pre">slot</span></code> to the <code class="docutils literal notranslate"><span class="pre">primary</span> <span class="pre">slot</span></code> it is automatically
+decrypted (after validation). If swap upgrades are enabled, the image
+located in the <code class="docutils literal notranslate"><span class="pre">primary</span> <span class="pre">slot</span></code>, also having the <code class="docutils literal notranslate"><span class="pre">ENCRYPTED</span></code> flag set and the
+TLV present, is re-encrypted while swapping to the <code class="docutils literal notranslate"><span class="pre">secondary</span> <span class="pre">slot</span></code>.</p>
+</div>
+<div class="section" id="threat-model">
+<h2><a class="reference external" href="#threat-model">Threat model</a><a class="headerlink" href="#threat-model" title="Permalink to this headline">¶</a></h2>
+<p>The encrypted image support is supposed to allow for confidentiality
+if the image is not residing on the device or is written to external
+storage, eg a SPI flash being used for the secondary slot.</p>
+<p>It does not protect against the possibility of attaching a JTAG and
+reading the internal flash memory, or using some attack vector that
+enables dumping the internal flash in any way.</p>
+<p>Since decrypting requires a private key (or secret if using symmetric
+crypto) to reside inside the device, it is the responsibility of the
+device manufacturer to guarantee that this key is already in the device
+and not possible to extract.</p>
+</div>
+<div class="section" id="design">
+<h2><a class="reference external" href="#design">Design</a><a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>When encrypting an image, only the payload (FW) is encrypted. The header,
+TLVs are still sent as plain data.</p>
+<p>Hashing and signing also remain functionally the same way as before,
+applied over the un-encrypted data. Validation on encrypted images, checks
+that the encrypted flag is set and TLV data is OK, then it decrypts each
+image block before sending the data to the hash routines.</p>
+<p>The image is encrypted using AES-CTR-128, with a counter that starts
+from zero (over the payload blocks) and increments by 1 for each 16-byte
+block. AES-CTR-128 was chosen for speed/simplicity and allowing for any
+block to be encrypted/decrypted without requiring knowledge of any other
+block (allowing for simple resume operations on swap interruptions).</p>
+<p>The key used is a randomized when creating a new image, by <code class="docutils literal notranslate"><span class="pre">imgtool</span></code> or
+<code class="docutils literal notranslate"><span class="pre">newt</span></code>. This key should never be reused and no checks are done for this,
+but randomizing a 16-byte block with a TRNG should make it highly
+improbable that duplicates ever happen.</p>
+<p>To distribute this AES-CTR-128 key, new TLVs were defined. The key can be
+encrypted using either RSA-OAEP, AES-KW-128, ECIES-P256 or ECIES-X25519.</p>
+<p>For RSA-OAEP a new TLV with value <code class="docutils literal notranslate"><span class="pre">0x30</span></code> is added to the image, for
+AES-KW-128 a new TLV with value <code class="docutils literal notranslate"><span class="pre">0x31</span></code> is added to the image, for
+ECIES-P256 a new TLV with value <code class="docutils literal notranslate"><span class="pre">0x32</span></code> is added, and for ECIES-X25519 a
+newt TLV with value <code class="docutils literal notranslate"><span class="pre">0x33</span></code> is added. The contents of those TLVs
+are the results of applying the given operations over the AES-CTR-128 key.</p>
+</div>
+<div class="section" id="ecies-encryption">
+<h2><a class="reference external" href="#ecies-encryption">ECIES encryption</a><a class="headerlink" href="#ecies-encryption" title="Permalink to this headline">¶</a></h2>
+<p>ECIES follows a well defined protocol to generate an encryption key. There are
+multiple standards which differ only on which building blocks are used; for
+MCUBoot we settled on some primitives that are easily found on our crypto
+libraries. The whole key encryption can be summarized as:</p>
+<ul class="simple">
+<li><p>Generate a new private key and derive the public key; when using ECIES-P256
+this is a secp256r1 keypair, when using ECIES-X25519 this will be a x25519
+keypair. Those keys will be our ephemeral keys.</p></li>
+<li><p>Generate a new secret (DH) using the ephemeral private key and the public key
+that corresponds to the private key embedded in the HW.</p></li>
+<li><p>Derive the new keys from the secret using HKDF (built on HMAC-SHA256). We
+are not using a <code class="docutils literal notranslate"><span class="pre">salt</span></code> and using an <code class="docutils literal notranslate"><span class="pre">info</span></code> of <code class="docutils literal notranslate"><span class="pre">MCUBoot_ECIES_v1</span></code>, generating
+48 bytes of key material.</p></li>
+<li><p>A new random encryption key of 16 bytes is generated (for AES-128). This is
+the AES key used to encrypt the images.</p></li>
+<li><p>The key is encrypted with AES-128-CTR and a <code class="docutils literal notranslate"><span class="pre">nonce</span></code> of 0 using the first
+16 bytes of key material generated previously by the HKDF.</p></li>
+<li><p>The encrypted key now goes through a HMAC-SHA256 using the remaining 32
+bytes of key material from the HKDF.</p></li>
+</ul>
+<p>The final TLV is built from the 65 bytes for ECIES-P256 or 32 bytes for
+ECIES-X25519, which correspond to the ephemeral public key, followed by the
+32 bytes of MAC tag and the 16 bytes of the encrypted key, resulting in a TLV
+of 113 bytes for ECIES-P256 or 80 bytes for ECIES-X25519.</p>
+<p>The implemenation of ECIES-P256 is named ENC_EC256 in the source code and
+artifacts while ECIES-X25519 is named ENC_X25519.</p>
+</div>
+<div class="section" id="upgrade-process">
+<h2><a class="reference external" href="#upgrade-process">Upgrade process</a><a class="headerlink" href="#upgrade-process" title="Permalink to this headline">¶</a></h2>
+<p>When starting a new upgrade process, <code class="docutils literal notranslate"><span class="pre">MCUBoot</span></code> checks that the image in the
+<code class="docutils literal notranslate"><span class="pre">secondary</span> <span class="pre">slot</span></code> has the <code class="docutils literal notranslate"><span class="pre">ENCRYPTED</span></code> flag set and has the required TLV with the
+encrypted key. It then uses its internal private/secret key to decrypt
+the TLV containing the key. Given that no errors are found, it will then
+start the validation process, decrypting the blocks before check. A good
+image being determined, the upgrade consists in reading the blocks from
+the <code class="docutils literal notranslate"><span class="pre">secondary</span> <span class="pre">slot</span></code>, decrypting and writing to the <code class="docutils literal notranslate"><span class="pre">primary</span> <span class="pre">slot</span></code>.</p>
+<p>If swap is used for the upgrade process, the encryption happens when
+copying the sectors of the <code class="docutils literal notranslate"><span class="pre">secondary</span> <span class="pre">slot</span></code> to the scratch area.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">scratch</span></code> area is not encrypted, so it must reside in the internal
+flash of the MCU to avoid attacks that could interrupt the upgrade and
+dump the data.</p>
+<p>Also when swap is used, the image in the <code class="docutils literal notranslate"><span class="pre">primary</span> <span class="pre">slot</span></code> is checked for
+presence of the <code class="docutils literal notranslate"><span class="pre">ENCRYPTED</span></code> flag and the key TLV. If those are present the
+sectors are re-encrypted when copying from the <code class="docutils literal notranslate"><span class="pre">primary</span> <span class="pre">slot</span></code> to
+the <code class="docutils literal notranslate"><span class="pre">secondary</span> <span class="pre">slot</span></code>.</p>
+<p>PS: Each encrypted image must have its own key TLV that should be unique
+and used only for this particular image.</p>
+<p>Also when swap method is employed, the sizes of both images are saved to
+the status area just before starting the upgrade process, because it
+would be very hard to determine this information when an interruption
+occurs and the information is spread across multiple areas.</p>
+</div>
+<div class="section" id="creating-your-keys-with-imgtool">
+<h2><a class="reference external" href="#creating-your-keys-with-imgtool">Creating your keys with imgtool</a><a class="headerlink" href="#creating-your-keys-with-imgtool" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">imgtool</span></code> can generate keys by using <code class="docutils literal notranslate"><span class="pre">imgtool</span> <span class="pre">keygen</span> <span class="pre">-k</span> <span class="pre">&lt;output.pem&gt;</span> <span class="pre">-t</span> <span class="pre">&lt;type&gt;</span></code>,
+where type can be one of <code class="docutils literal notranslate"><span class="pre">rsa-2048</span></code>, <code class="docutils literal notranslate"><span class="pre">rsa-3072</span></code>, <code class="docutils literal notranslate"><span class="pre">ecdsa-p256</span></code>, <code class="docutils literal notranslate"><span class="pre">ecdsa-p224</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ed25519</span></code>. This will generate a keypair or private key.</p>
+<p>To extract the public key in source file form, use
+<code class="docutils literal notranslate"><span class="pre">imgtool</span> <span class="pre">getpub</span> <span class="pre">-k</span> <span class="pre">&lt;input.pem&gt;</span> <span class="pre">-l</span> <span class="pre">&lt;lang&gt;</span></code>, where lang can be one of <code class="docutils literal notranslate"><span class="pre">c</span></code> or
+<code class="docutils literal notranslate"><span class="pre">rust</span></code> (defaults to <code class="docutils literal notranslate"><span class="pre">c</span></code>).</p>
+<p>If using AES-KW-128, follow the steps in the next section to generate the
+required keys.</p>
+</div>
+<div class="section" id="creating-your-keys-with-unix-tooling">
+<h2><a class="reference external" href="#creating-your-keys-with-unix-tooling">Creating your keys with Unix tooling</a><a class="headerlink" href="#creating-your-keys-with-unix-tooling" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>If using RSA-OAEP, generate a keypair following steps similar to those
+described in <a class="reference internal" href="signed_images.html"><span class="doc">signed_images</span></a> to create RSA keys.</p></li>
+<li><p>If using ECIES-P256, generate a keypair following steps similar to those
+described in <a class="reference internal" href="signed_images.html"><span class="doc">signed_images</span></a> to create ECDSA256 keys.</p></li>
+<li><p>If using ECIES-X25519, generate a private key passing the option <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">x25519</span></code>
+to <code class="docutils literal notranslate"><span class="pre">imgtool</span> <span class="pre">keygen</span></code> command. To generate public key PEM file the following
+command can be used: <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">pkey</span> <span class="pre">-in</span> <span class="pre">&lt;generated-private-key.pem&gt;</span> <span class="pre">-pubout</span></code></p></li>
+<li><p>If using AES-KW-128 (<code class="docutils literal notranslate"><span class="pre">newt</span></code> only), the <code class="docutils literal notranslate"><span class="pre">kek</span></code> can be generated with a
+command like <code class="docutils literal notranslate"><span class="pre">dd</span> <span class="pre">if=/dev/urandom</span> <span class="pre">bs=1</span> <span class="pre">count=16</span> <span class="pre">|</span> <span class="pre">base64</span> <span class="pre">&gt;</span> <span class="pre">my_kek.b64</span></code></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="imgtool.html" class="btn btn-neutral float-right" title="Image tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ecdsa.html" class="btn btn-neutral" title="ECDSA signature format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+
+<table>
+<tr>
+<td>
+    <p>
+        &copy; Copyright 2019-2021.
+      Last updated on Jun 24, 2021.
+
+    </p>
+</td>
+<td id="nordiclogo">
+  <a href="https://www.nordicsemi.com/"><img src="_static/images/nordic.svg" border="0"/></a>
+</td>
+</tr>
+</table>
+  </div> 
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> MCUboot</span>
+       <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <div class="rst-other-version ncs">
+        <a href="./../nrf/index.html">nRF Connect SDK</a>
+      </div>
+      
+      <div class="rst-other-version nrfx">
+        <a href="./../nrfx/index.html">nrfx</a>
+      </div>
+      
+      <div class="rst-other-version nrfxlib">
+        <a href="./../nrfxlib/README.html">nrfxlib</a>
+      </div>
+      
+      <div class="rst-other-version zephyr">
+        <a href="./../zephyr/index.html">Zephyr Project</a>
+      </div>
+      
+      <div class="rst-other-version kconfig">
+        <a href="./../kconfig/index.html">Kconfig Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

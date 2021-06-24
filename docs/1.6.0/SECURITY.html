@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>MCUboot project security policy &mdash; MCUboot 1.7.99 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/nordic.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/common.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/mcuboot.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+  <script type="text/javascript" src="_static/js/ncs.js"></script>
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Release Process" href="release.html" />
+  <link rel="shortcut icon" href="_static/images/favicon.ico"/>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="wrapper.html" class="icon icon-home"> MCUboot
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.7.99
+              </div>
+            
+          
+
+          
+<div id="searchbox" role="search">
+  <div class="searchformwrapper">
+    <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+  </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">MCUboot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">MCUboot Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Boot Loader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecdsa.html">ECDSA signature format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encrypted_images.html">Encrypted images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imgtool.html">Image tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme-zephyr.html">Building and using MCUboot with Zephyr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme-ncs.html">Using MCUboot in nRF Connect SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubmittingPatches.html">Submitting Patches</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubmittingPatches.html#developer-certificate-of-origin">Developer Certificate of Origin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testplan-zephyr.html">Zephyr Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">Release Process</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MCUboot project security policy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reporting-security-issues">Reporting Security Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vulnerability-advisories">Vulnerability Advisories</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="wrapper.html">MCUboot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="wrapper.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>MCUboot project security policy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/SECURITY.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mcuboot-project-security-policy">
+<h1>MCUboot project security policy<a class="headerlink" href="#mcuboot-project-security-policy" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="reporting-security-issues">
+<h2>Reporting Security Issues<a class="headerlink" href="#reporting-security-issues" title="Permalink to this headline">¶</a></h2>
+<p>The MCUboot team takes security, vulnerabilities, and weaknesses
+seriously.</p>
+<p>Security issues should be sent to the current maintainers of the
+project:</p>
+<ul class="simple">
+<li><p>David Brown: davidb&#64;davidb.org or david.brown&#64;linaro.org</p></li>
+<li><p>Fabio Utzig: utzig&#64;apache.org</p></li>
+</ul>
+<p>If you wish to send encrypted email, you may use these PGP keys:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pub</span>   <span class="n">rsa4096</span> <span class="mi">2011</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">14</span> <span class="p">[</span><span class="n">SC</span><span class="p">]</span>
+      <span class="n">DAFD760825AE2636AEA9CB19E6BA9F5C5E54DF82</span>
+<span class="n">uid</span>           <span class="p">[</span><span class="n">ultimate</span><span class="p">]</span> <span class="n">David</span> <span class="n">Brown</span> <span class="o">&lt;</span><span class="n">davidb</span><span class="nd">@davidb</span><span class="o">.</span><span class="n">org</span><span class="o">&gt;</span>
+<span class="n">uid</span>           <span class="p">[</span><span class="n">ultimate</span><span class="p">]</span> <span class="n">David</span> <span class="n">Brown</span> <span class="o">&lt;</span><span class="n">david</span><span class="o">.</span><span class="n">brown</span><span class="nd">@linaro</span><span class="o">.</span><span class="n">org</span><span class="o">&gt;</span>
+<span class="n">sub</span>   <span class="n">rsa4096</span> <span class="mi">2011</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">14</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pub</span>   <span class="n">rsa4096</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">28</span> <span class="p">[</span><span class="n">SC</span><span class="p">]</span>
+      <span class="mi">126087</span><span class="n">C7E725625BC7E89CC7537097EDFD4A7339</span>
+<span class="n">uid</span>           <span class="p">[</span> <span class="n">unknown</span><span class="p">]</span> <span class="n">Fabio</span> <span class="n">Utzig</span> <span class="o">&lt;</span><span class="n">utzig</span><span class="nd">@apache</span><span class="o">.</span><span class="n">org</span><span class="o">&gt;</span>
+<span class="n">uid</span>           <span class="p">[</span> <span class="n">unknown</span><span class="p">]</span> <span class="n">Fabio</span> <span class="n">Utzig</span> <span class="o">&lt;</span><span class="n">utzig</span><span class="nd">@utzig</span><span class="o">.</span><span class="n">org</span><span class="o">&gt;</span>
+<span class="n">sub</span>   <span class="n">rsa4096</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">28</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Please include the word “SECURITY” as well as “MCUboot” in the subject
+of any messages.</p>
+<p>We will make our best effort to respond within a timely manner.  Most
+vulnerabilities found within published code will undergo an embargo of
+90 days to allow time fixes to be developed and deployed.</p>
+</div>
+<div class="section" id="vulnerability-advisories">
+<h2>Vulnerability Advisories<a class="headerlink" href="#vulnerability-advisories" title="Permalink to this headline">¶</a></h2>
+<p>Vulnerability reports and published fixes will be reported as follows:</p>
+<ul class="simple">
+<li><p>Issues will be entered into Github’s <a class="reference external" href="https://github.com/mcu-tools/mcuboot/security/advisories">Security Advisory
+system</a>, with
+the interested parties (including the reporter) added as viewers.</p></li>
+<li><p>The release notes will contain a reference to any allocated CVE(s).</p></li>
+<li><p>When any embargo is lifted, the Security Advisory page will be made
+public, and the public CVE database will be updated with all
+relevant information.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="release.html" class="btn btn-neutral" title="Release Process" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+
+<table>
+<tr>
+<td>
+    <p>
+        &copy; Copyright 2019-2021.
+      Last updated on Jun 24, 2021.
+
+    </p>
+</td>
+<td id="nordiclogo">
+  <a href="https://www.nordicsemi.com/"><img src="_static/images/nordic.svg" border="0"/></a>
+</td>
+</tr>
+</table>
+  </div> 
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> MCUboot</span>
+       <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <div class="rst-other-version ncs">
+        <a href="./../nrf/index.html">nRF Connect SDK</a>
+      </div>
+      
+      <div class="rst-other-version nrfx">
+        <a href="./../nrfx/index.html">nrfx</a>
+      </div>
+      
+      <div class="rst-other-version nrfxlib">
+        <a href="./../nrfxlib/README.html">nrfxlib</a>
+      </div>
+      
+      <div class="rst-other-version zephyr">
+        <a href="./../zephyr/index.html">Zephyr Project</a>
+      </div>
+      
+      <div class="rst-other-version kconfig">
+        <a href="./../kconfig/index.html">Kconfig Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
