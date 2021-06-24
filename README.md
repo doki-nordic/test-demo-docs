@@ -1,1 +1,1 @@
-This is main branch with a source code.
+This is **doc_pages** branch with a documentation served at github pages.
