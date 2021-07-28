@@ -1,0 +1,54 @@
+<html>
+
+<header>
+    <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script-->
+    <script src="ZipServer.js"></script>
+</header>
+
+<body style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
+
+
+    <script>
+
+        let zs = null;
+        let zipId = null;
+        let zipUrl = 'latest.zip';
+
+        async function doTheJob() {
+
+            zs = new ZipServer();
+            await zs.register();
+
+            zip = await new Promise((resolve, reject) => {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", zipUrl, true);
+                xhr.responseType = 'arraybuffer';
+                xhr.addEventListener('load', function () {
+                    if (xhr.status === 200) {
+                        console.log(xhr.response);
+                        console.log(new Blob([xhr.response]));
+                        resolve(xhr.response);
+                    } else {
+                        console.log(xhr.status);
+                        reject(Error("Download error!"));
+                    }
+                })
+                xhr.addEventListener('progress', function (e) {
+                    console.log(e.loaded);
+                })
+                xhr.send();
+            });
+
+            let id = zs.addZip(zip).id;
+
+            console.log('ZIP added ', id);
+        }
+
+        doTheJob();
+
+
+    </script>
+
+</body>
+
+</html>
