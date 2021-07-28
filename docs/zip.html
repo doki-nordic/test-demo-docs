@@ -14,7 +14,7 @@
         let zipId = null;
         let zipUrl = 'latest.zip';
 
-        async function doTheJob() {
+        async function doTheJobOLD() {
 
             zs = new ZipServer();
             await zs.register();
@@ -44,8 +44,34 @@
             console.log('ZIP added ', id);
         }
 
-        doTheJob();
+        const workerScriptURL = 'overlayWorker.js';
 
+        let reg = null;
+
+        async function doTheJob() {
+
+            reg = await navigator.serviceWorker.register(workerScriptURL);
+
+            console.log(reg.active);
+
+            setTimeout(async () => {
+                let w = await getWorker();
+                console.log('Sending message to worker: ', w);
+                w.postMessage({ id: 'test' });
+            }, 1000);
+
+        }
+
+        async function getWorker() {
+            while (!reg || !reg.active || !reg.active.scriptURL.toString().endsWith(workerScriptURL)) {
+                console.log('Waiting for worker...');
+                console.log(!reg, !reg.active, reg.active.scriptURL, workerScriptURL, reg.active.scriptURL.toString().endsWith(workerScriptURL));
+                await new Promise(r => setTimeout(r, 300));
+            }
+            return reg.active;
+        }
+
+        doTheJob();
 
     </script>
 
