@@ -22,12 +22,11 @@ function compress(file) {
                 break;
             }
         }
-        let args = ['-cn9w', w.toString(), `"${file}"`];
+        let args = ['-cn9w', w.toString(), `${file}`];
         try {
             res = child_process.spawnSync('brotli', args,
                 {
                     encoding: 'buffer',
-                    shell: true,
                     maxBuffer: Math.round(1.2 * stat.size) + 256
                 });
         } catch (ex) {
@@ -42,12 +41,11 @@ function compress(file) {
                 break;
             }
         }
-        let args = ['-zkc', '-' + w, `"${file}"`];
+        let args = ['-zkc', '-' + w, `${file}`];
         try {
             res = child_process.spawnSync('bzip2', args,
                 {
                     encoding: 'buffer',
-                    shell: true,
                     maxBuffer: Math.round(1.2 * stat.size) + 1024
                 });
         } catch (ex) {
@@ -97,7 +95,7 @@ function processDir(dirPath, dirItem) {
             let hash = crypto.createHash('sha256').update(fs.readFileSync(path)).digest('base64');
             if (hash in hashMap) {
                 item = hashMap[hash];
-                console.log(`File ${file} reused: ${item.s} => 0 (0%)`);
+                console.log(`File ${path} reused: ${item.s} => 0 (0%)`);
                 totalInput += item.s;
             } else {
                 let out = compress(path);
@@ -119,7 +117,7 @@ function processDir(dirPath, dirItem) {
 let outputFD = fs.openSync(outputFile, 'w');
 fs.writeSync(outputFD, new Uint8Array([0x4f, 0x76, 0x72, 0x6c]));
 let outputSize = 4;
-let fileMap = {};
+let fileMap = {'/d':1};
 
 processDir(inputDir, fileMap);
 
