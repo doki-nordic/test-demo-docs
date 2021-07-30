@@ -1,0 +1,135 @@
+<html>
+<header></header>
+
+<body>
+
+    <div id="loading" class="panels">Loading...</div>
+    <div id="error404" class="panels" style="display: none;">404 Not found</div>
+    <div id="errorOther" class="panels" style="display: none;">Error: <span id="errorMessage"></span></div>
+    <div id="auth" class="panels" style="display: none;">Authorization required... <a href="#"
+            onclick="authorize(); return false;">[authorize]</a></div>
+
+    <script>
+
+        const workerScriptURL = '/docs/overlayWorker.js';
+        const workerScope = '/docs/';
+
+        let workerReg = null;
+        let worker = null;
+        let workerResponseListener = null;
+        let overlayURL = null;
+        let baseURL = null;
+
+        function showPanel(name, message) {
+            document.querySelectorAll('.panels').forEach(e => e.style.display = 'none');
+            document.getElementById(name).style.display = '';
+            document.getElementById('errorMessage').innerText = message || '';
+        }
+
+        async function getWorker() {
+            if (worker) return worker;
+            while (!workerReg || !workerReg.active || !workerReg.active.scriptURL.toString().endsWith(workerScriptURL)) {
+                console.log('Waiting for worker...');
+                await new Promise(r => setTimeout(r, 300));
+            }
+            worker = workerReg.active;
+            console.log('Worker activated');
+            return worker;
+        }
+
+        async function getTextFile(url) {
+            try {
+                let response = await fetch(url);
+                if (response.status != 200) {
+                    return null;
+                }
+                return await response.text();
+            } catch (ex) {
+                return null;
+            }
+        }
+
+        async function checkOverlay() {
+            let path = document.location.pathname;
+            baseURL = path;
+            overlayURL = null;
+            while (baseURL.length) {
+                let pos = baseURL.lastIndexOf('/');
+                baseURL = baseURL.substr(0, pos);
+                let text = await getTextFile(baseURL + '/overlay.txt');
+                if (text != null) {
+                    baseURL += '/';
+                    overlayURL = text;
+                    break;
+                }
+            }
+
+            if (overlayURL == null) {
+                showPanel('error404');
+                return;
+            }
+
+            console.log(`Found overlay "${overlayURL}" for path "${baseURL}"`);
+
+            workerReg = await navigator.serviceWorker.register(workerScriptURL, { scope: workerScope });
+
+            let worker = await getWorker();
+
+            navigator.serviceWorker.addEventListener('message', e => {
+                console.log(`Message from worker type ${e.data.type}, status ${e.data.status}`);
+                if (workerResponseListener) {
+                    let f = workerResponseListener;
+                    workerResponseListener = null;
+                    f(e);
+                }
+            });
+
+            let status = await new Promise((resolve, reject) => {
+                workerResponseListener = e => {
+                    if (e.data.status != 'error') {
+                        resolve(e.data.status);
+                    } else {
+                        reject(new Error(e.data.message));
+                    }
+                }
+                worker.postMessage({ type: 'set', id: overlayURL });
+            });
+
+            if (status == 'already') {
+                console.log('Overlay already loaded. This is truly 404 error.');
+                showPanel('error404');
+                return;
+            } else if (status == 'cached') {
+                console.log('Overlay restored from cached. Reloading...');
+                document.location.reload();
+                return;
+            }
+
+            showPanel('auth');
+        }
+
+        async function authorize() {
+
+            let overlay = await (await fetch(overlayURL)).arrayBuffer();
+
+            status = await new Promise((resolve, reject) => {
+                workerResponseListener = e => {
+                    if (e.data.status != 'error') {
+                        resolve(e.data.status);
+                    } else {
+                        reject(new Error(e.data.message));
+                    }
+                }
+                worker.postMessage({ type: 'set', id: overlayURL, baseURL: baseURL, content: overlay }, [overlay]);
+            });
+
+            document.location.reload();
+        }
+
+        checkOverlay();
+
+    </script>
+
+</body>
+
+</html>

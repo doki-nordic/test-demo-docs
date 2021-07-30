@@ -3,6 +3,11 @@ self.importScripts("brotli.js");
 
 const CACHE_LIMIT = 4 * 1024 * 1024;
 
+const indexNames = [
+    'index.html',
+    'README.html'
+];
+
 class Overlay {
 
     constructor(id, baseURL, content) {
@@ -63,9 +68,10 @@ class Overlay {
             item = item[itemName];
         }
         if (item['/d']) {
-            if ('index.html' in item) {
-                item = item['index.html'];
-                pathArray.push('index.html');
+            let index = indexNames.find(x => x in item);
+            if (index) {
+                item = item[index];
+                pathArray.push(index);
             } else {
                 console.log('Directory without index.');
                 return null;
@@ -159,7 +165,7 @@ this.addEventListener('fetch', e => {
         return e.request;
     }
     try {
-        let file = overlay.getFile(url.origin + url.pathname);
+        let file = overlay.getFile(url.pathname);
         if (!file) {
             console.log('File not found in overlay');
             return e.request;

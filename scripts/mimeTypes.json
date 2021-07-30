@@ -1,0 +1,11 @@
+{
+    ".html": "text/html; charset=utf-8",
+    ".txt":  "text/plain; charset=utf-8",
+    ".js":   "text/javascript",
+    ".png":  "image/png",
+    ".jpg":  "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".svg":  "image/svg+xml",
+    ".map":  "application/octet-stream",
+    ".inv":  "application/octet-stream"
+}
