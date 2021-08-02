@@ -1,0 +1,24 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc build active file",
+            "command": "make",
+            "args": [
+                "-j8",
+                "DEBUG=1",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/diff-brotli/build/linux"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}

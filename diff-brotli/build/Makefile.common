@@ -1,0 +1,57 @@
+
+ifeq (1,$(DEBUG))
+  CFLAGS += $(DEBUGFLAGS) -DDEBUG=1
+  STRIP=\#
+  OUTDIR = debug
+else
+  CFLAGS += $(OPTFLAGS)
+  OUTDIR = release
+endif
+
+CFLAGS += -I../../src -I../../brotlilib/c/include
+
+OBJ := $(patsubst ../../src/%.c,$(OUTDIR)/obj/src/%.o,$(wildcard ../../src/*.c))
+OBJ += $(patsubst ../../brotlilib/c/enc/%.c,$(OUTDIR)/obj/bre/%.o,$(wildcard ../../brotlilib/c/enc/*.c))
+OBJ += $(patsubst ../../brotlilib/c/dec/%.c,$(OUTDIR)/obj/brd/%.o,$(wildcard ../../brotlilib/c/dec/*.c))
+OBJ += $(patsubst ../../brotlilib/c/common/%.c,$(OUTDIR)/obj/brc/%.o,$(wildcard ../../brotlilib/c/common/*.c))
+
+all: postprocess
+
+postprocess: $(OUTDIR)/$(TARGET)
+
+clean:
+	rm -Rf $(OUTDIR)
+
+cleanobj:
+	rm -Rf $(OUTDIR)/obj
+
+rebuild: clean
+	+make all
+
+$(OUTDIR)/obj/marker.txt:
+	mkdir -p $(OUTDIR)/obj/src
+	mkdir -p $(OUTDIR)/obj/bre
+	mkdir -p $(OUTDIR)/obj/brc
+	mkdir -p $(OUTDIR)/obj/brd
+	echo OK > $(OUTDIR)/obj/marker.txt
+
+$(OUTDIR)/$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) -o $@
+	$(STRIP) $@
+
+$(OUTDIR)/obj/src/%.o : ../../src/%.c $(OUTDIR)/obj/marker.txt Makefile ../Makefile.common
+	$(CC) -MD -c $(CFLAGS) $(word 1,$<) -o $@
+
+$(OUTDIR)/obj/bre/%.o : ../../brotlilib/c/enc/%.c $(OUTDIR)/obj/marker.txt Makefile ../Makefile.common
+	$(CC) -MD -c $(CFLAGS) $(word 1,$<) -o $@
+
+$(OUTDIR)/obj/brd/%.o : ../../brotlilib/c/dec/%.c $(OUTDIR)/obj/marker.txt Makefile ../Makefile.common
+	$(CC) -MD -c $(CFLAGS) $(word 1,$<) -o $@
+
+$(OUTDIR)/obj/brc/%.o : ../../brotlilib/c/common/%.c $(OUTDIR)/obj/marker.txt Makefile ../Makefile.common
+	$(CC) -MD -c $(CFLAGS) $(word 1,$<) -o $@
+
+-include $(OUTDIR)/obj/src/*.d
+-include $(OUTDIR)/obj/bre/*.d
+-include $(OUTDIR)/obj/brd/*.d
+-include $(OUTDIR)/obj/brc/*.d
