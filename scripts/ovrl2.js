@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const child_process = require('child_process');
+const { OverlayReader } = require('./overlay_reader');
 
 const STATE = {
     DELETED: 'DELETED',
@@ -18,6 +19,8 @@ let fileMap = {
     downFileHash: {},
     downChunkHash: {},
 };
+
+let totalUpBytes = 0;
 
 function fileMatch(path, fileName) {
     return !fileName.startsWith('.');
@@ -99,6 +102,7 @@ function walkUpDir(osPath, relPath) {
                 };
                 fileMap.files[entryPath] = file;
             }
+            totalUpBytes += stat.size;
             file.upSize = stat.size;
             [file.upFileHash] = calcHashes(osEntryPath, stat.size);
 
@@ -156,15 +160,43 @@ function compress(baseFile, inputFile) {
     }
 }
 
+let overlayFD = null;
+let overlaySize = 0;
+let overlayRoot = { '/d': 1 };
+
 function addBlock(block) {
-    return 0;
+    let pos = overlaySize;
+    fs.writeSync(overlayFD, block);
+    overlaySize += block.length;
+    return pos;
+}
+
+function getOverlayDir(pathArray) {
+    let dir = overlayRoot;
+    for (let i = 0; i < pathArray.length - 1; i++) {
+        let name = pathArray[i];
+        if (!(name in dir)) {
+            dir[name] = { '/d': 1 };
+        }
+        dir = dir[name];
+        if (!('/d' in dir)) {
+            throw Error('Invalid file structure.');
+        }
+    }
+    return dir;
 }
 
 function addToLayout(filePath, item) {
-    console.log({ filePath, item });
+    pathArray = filePath.split('/');
+    let dir = getOverlayDir(pathArray);
+    let fileName = pathArray[pathArray.length - 1];
+    dir[fileName] = item;
 }
 
 function createOverlay(osDownPath, osUpPath, overlayFile) {
+    overlayFD = fs.openSync(overlayFile, 'w');
+    fs.writeSync(overlayFD, new Uint8Array([0x4f, 0x76, 0x72, 0x6c]));
+    overlaySize += 4;
     let totalInput = 0;
     let totalOutput = 0;
     for (filePath in fileMap.files) {
@@ -173,11 +205,9 @@ function createOverlay(osDownPath, osUpPath, overlayFile) {
         let osUpFile = `${osUpPath}/${filePath}`;
         let layout;
         if (file.upSize == 0) {
-            layout = { s: 0, c: 0, b: 0 };
+            layout = { s: 0, c: 0, b: 4 };
         } else if (file.state == STATE.DELETED) {
-            layout = {
-                d: 1,
-            };
+            layout = {};
         } else if (file.state == STATE.UNCHANGED) {
             if (file.src) {
                 layout = {
@@ -188,7 +218,11 @@ function createOverlay(osDownPath, osUpPath, overlayFile) {
             }
             totalInput += file.upSize;
         } else if (file.state == STATE.LINK) {
-            layout = fileMap.files[file.src].layout; // TODO: Bug: if it contains f: '' then reference will be invalid
+            layout = fileMap.files[file.src].layout;
+            if (layout.f == '') {
+                layout = JSON.parse(JSON.stringify(layout));
+                layout.f = file.src;
+            }
             totalInput += file.upSize;
         } else {
             // Compress file directly
@@ -227,10 +261,12 @@ function createOverlay(osDownPath, osUpPath, overlayFile) {
                 .sort((a, b) => (a[1] - b[1]));
             if (entries.length > 3) entries = entries.slice(0, 3);
             // If exists, use it as a compression dictionary
+            let bestScore = best.length;
             for (let entry of entries) {
                 let next = compress(`${osDownPath}/${entry[0]}`, osUpFile);
-                if (next.length < best.length) {
+                if (next.length + entry[0].length * 0.6 < bestScore) {
                     best = next;
+                    bestScore = next.length + entry[0].length * 0.6;
                     src = entry[0];
                 }
             }
@@ -238,11 +274,15 @@ function createOverlay(osDownPath, osUpPath, overlayFile) {
             let begin = addBlock(best);
             layout = {
                 s: file.upSize,
-                c: best.length,
                 b: begin,
             };
             if (src !== null) {
-                layout.f = (src == filePath) ? '' : src; // TODO: Allow reference to up file (requirement: up file is not referencing any other up file).
+                layout.d = best.length;
+                if (src != filePath) {
+                    layout.f = src; // TODO: Allow reference to up file (requirement: up file is not referencing any other up file).
+                }
+            } else {
+                layout.c = best.length;
             }
             totalOutput += best.length;
             totalInput += file.upSize;
@@ -252,7 +292,23 @@ function createOverlay(osDownPath, osUpPath, overlayFile) {
             addToLayout(filePath, layout);
         //console.log(`Compression ${totalInput} -> ${totalOutput}: ${Math.round(totalOutput / totalInput * 1000) / 10}%`);
         //console.log(process.memoryUsage().heapTotal);
+        process.stdout.write(`\r${Math.round(totalInput / totalUpBytes * 1000) / 10}%    `);
     }
+    fileMap['/mimeTypes'] = {};
+    let rootJSON = JSON.stringify(overlayRoot);
+    fs.writeFileSync(overlayFile + '._file_map', rootJSON);
+    let fileMapCompressed = compress(null, overlayFile + '._file_map');
+    fs.unlinkSync(overlayFile + '._file_map');
+    fs.writeSync(overlayFD, fileMapCompressed);
+    totalOutput += fileMapCompressed.length;
+    let footer = new Uint8Array(12);
+    let footerView = new DataView(footer.buffer);
+    footerView.setUint32(0, fileMapCompressed.length, true);
+    footerView.setUint32(4, rootJSON.length, true);
+    footerView.setUint32(8, 0x6c72764f, false);
+    fs.writeSync(overlayFD, footer);
+    totalOutput += footer.byteLength;
+    fs.closeSync(overlayFD);
     console.log(`Compression ${totalInput} -> ${totalOutput}: ${Math.round(totalOutput / totalInput * 1000) / 10}%`);
 }
 
@@ -260,6 +316,8 @@ walkDownDir('_.test/b/arch');
 walkUpDir('_.test/a/arch');
 console.log(process.memoryUsage().heapTotal);
 createOverlay('_.test/b/arch', '_.test/a/arch', 'out.ovrl');
+
+console.log(JSON.stringify(overlayRoot, null, 2));
 
 //console.log('===================');
 //console.log(JSON.stringify(fileMap, null, 4));
