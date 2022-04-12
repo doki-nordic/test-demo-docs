@@ -105,8 +105,79 @@
 		span.-icon-exclamation {
 			background-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%3Csvg%20version%3D%221.1%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%222.5%22%20width%3D%223%22%20height%3D%227%22%20fill%3D%22%236ab0de%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%2210.5%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%236ab0de%22%2F%3E%3C%2Fsvg%3E');
 		}
+		span.help {
+			display: inline-block;
+			width: 310px;
+			font-size: 16px;
+			font-weight: normal;
+		}
+		span.help>span {
+			display: inline-block;
+			text-decoration: none;
+			background: #6ab0de;
+			color: white;
+			margin: 0px 6px 0px 6px;
+			padding: 0px;
+			border-radius: 0.65em;
+			width: 1.3em;
+			height: 1.3em;
+			vertical-align: 0.2em;
+			font-size: 80%;
+			text-align: center;
+			line-height: 1em;
+		}
+		span.help>span::after {
+			content: '?';
+			font-weight: bold;
+			display: block;
+			position: relative;
+			top: 3px;
+			line-height: 1em;
+			z-index: 0;
+		}
+		span.help>span:hover::after {
+			color: #6ab0de;
+		}
+		span.help>span div {
+			text-align: left;
+			line-height: normal;
+			margin: 0em 0em 0.7em 0em;
+		}
+		span.help>span>div::before {
+			content: 'Help';
+			display: block;
+			background: #6ab0de;
+			color: white;
+			font-weight: bold;
+			padding: 4px 4px 4px 12px;
+			font-size: 113%;
+		}
+		span.help>span>div {
+			margin: 0px;
+			display: none;
+			background: #e7f2fa;
+			color: #404040;
+			position: absolute;
+			padding: 0px;
+			width: 300px;
+			font-size: 110%;
+			border: 1px solid #6ab0de;
+			z-index: 1;
+		}
+		span.help>span>div>div {
+			margin: 0px;
+			padding: 12px;
+			max-height: 200px;
+			overflow: auto;
+		}
+		span.help>span {
+			text-decoration: none;
+		}
+		span.help>span:hover>div {
+			display: block;
+		}
 		/* Dark Color Theme */
-		@media (prefers-color-scheme: xxxxxxx) {
+		@media (prefers-color-scheme: dark) {
 			body {
 				color: #cccccc;
 				background-color: #292929;
@@ -133,6 +204,20 @@
 			div.note-content {
 				background: #2c3e49;
 				color: #cccccc;
+			}
+			span.help>span {
+				background: #447291;
+			}
+			span.help>span:hover::after {
+				color: #447291;
+			}
+			span.help>span>div::before {
+				background: #447291;
+			}
+			span.help>span>div {
+				background: #2c3e49;
+				color: #cccccc;
+				border: 1px solid #447291;
 			}
 		}
 		/* Visual Studio Code Color Theme */
@@ -171,76 +256,21 @@
 			background: var(--vscode-quickInput-background);
 			color: var(--vscode-quickInput-foreground);
 		}
-
-		span.help {
-			display: inline-block;
-			width: 310px;
-			font-size: 16px;
-			font-weight: normal;
+		html[style*="--vscode"] span.help>span {
+			background: var(--vscode-button-background);
+			color: var(--vscode-button-foreground);
 		}
-
-		span.help>span {
-			display: inline-block;
-			text-decoration: none;
-			background: #6ab0de;
-			color: white;
-			margin: 0px 6px 0px 6px;
-			padding: 0px;
-			border-radius: 0.65em;
-			width: 1.3em;
-			height: 1.3em;
-			vertical-align: 0.2em;
-			font-size: 80%;
-			text-align: center;
-			line-height: 1em;
+		html[style*="--vscode"] span.help>span:hover::after {
+			color: var(--vscode-button-background);
 		}
-		span.help>span::after {
-			content: '?';
-			font-weight: bold;
-			display: block;
-			position: relative;
-			top: 3px;
-			line-height: 1em;
+		html[style*="--vscode"] span.help>span>div::before {
+			background: var(--vscode-button-background);
+			color: var(--vscode-button-foreground);
 		}
-		span.help>span:hover::after {
-			color: #6ab0de;
-		}
-		span.help>span div {
-			text-align: left;
-			line-height: normal;
-			margin: 0em 0em 0.7em 0em;
-		}
-		span.help>span>div::before {
-			content: 'Help';
-			display: block;
-			background: #6ab0de;
-			color: white;
-			font-weight: bold;
-			padding: 4px 4px 4px 12px;
-			font-size: 113%;
-		}
-		span.help>span>div {
-			margin: 0px;
-			display: none;
-			background: #e7f2fa;
-			color: #404040;
-			position: absolute;
-			padding: 0px;
-			width: 300px;
-			font-size: 110%;
-			border: 1px solid #6ab0de;
-		}
-		span.help>span>div>div {
-			margin: 0px;
-			padding: 12px;
-			max-height: 200px;
-			overflow: auto;
-		}
-		span.help>span {
-			text-decoration: none;
-		}
-		span.help>span:hover>div {
-			display: block;
+		html[style*="--vscode"] span.help>span>div {
+			background: var(--vscode-quickInput-background);
+			color: var(--vscode-quickInput-foreground);
+			border: 1px solid var(--vscode-button-background);
 		}
 	</style>
 </head>
