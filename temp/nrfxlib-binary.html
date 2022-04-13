@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SBOM Report</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Slab&display=swap');
+		/* Nordic Default Theme */
+		body {
+			font-family: Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
+			color: #404040;
+			margin: 51px;
+			font-size: 16px;
+			background-color: white;
+		}
+		pre {
+			font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+			font-size: 12px;
+			line-height: 1.4;
+			padding: 12px;
+			border: 1px solid #e1e4e5;
+			margin: 1px 0 24px;
+			background: #f8f8f8;
+			min-width: fit-content;
+		}
+		h1 {
+			font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif;
+			border-top: 1px solid #ddd;
+			padding-top: 20px;
+			margin-top: 0px;
+			margin-bottom: 24px;
+		}
+		h2 {
+			font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif;
+			border-top: 1px solid #ddd;
+			padding-top: 24px;
+			margin-top: 0px;
+			margin-bottom: 24px;
+		}
+		a {
+			color: #00a9ce;
+			text-decoration: none;
+		}
+		a:hover {
+			color: #0077C8;
+		}
+		div, p {
+			line-height: 24px;
+			margin-block-start: 1em;
+			margin-block-end: 1em;
+			margin-inline-start: 0px;
+			margin-inline-end: 0px;
+		}
+		.src {
+			font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+			font-size: 12px;
+		}
+		.fa {
+			text-decoration: none;
+			color: #404040;
+		}
+		.fa:hover {
+			text-decoration: none;
+			color: #0077C8;
+		}
+		div.note-header {
+			background: #6ab0de;
+			color: white;
+			font-weight: bold;
+			padding: 4px 4px 4px 12px;
+			margin-bottom: 0px;
+		}
+		div.note-content {
+			background: #e7f2fa;
+			color: #404040;
+			padding: 12px;
+			margin-top: 0px;
+		}
+		a#scroll-up {
+			line-height: normal;
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			display: block;
+			background: #6ab0de;
+			width: 56px;
+			height: 50px;
+			border-radius: 28px;
+			color: white;
+			text-align: center;
+			font-size: 30px;
+			padding-top: 6px;
+			box-shadow: 1px 3px 10px 0px #222222
+		}
+		a#scroll-up:hover {
+			box-shadow: 1px 3px 14px 3px #222222
+		}
+		span[class^="-icon-"] {
+			width: 14px;
+			height: 14px;
+			vertical-align: -1px;
+			display: inline-block;
+			background-size: 100% 100%;
+		}
+		span.-icon-exclamation {
+			background-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%3Csvg%20version%3D%221.1%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%222.5%22%20width%3D%223%22%20height%3D%227%22%20fill%3D%22%236ab0de%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%2210.5%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%236ab0de%22%2F%3E%3C%2Fsvg%3E');
+		}
+		/* Dark Color Theme */
+		@media (prefers-color-scheme: dark) {
+			body {
+				color: #cccccc;
+				background-color: #292929;
+			}
+			pre {
+				border: 1px solid #474747;
+				background: #333333;
+			}
+			h2, h1 {
+				border-top-color: #444444;
+			}
+			a:hover {
+				color: #66d1e9;
+			}
+			.fa {
+				color: #cccccc;
+			}
+			.fa:hover {
+				color: #66d1e9;
+			}
+			div.note-header, a#scroll-up {
+				background: #447291;
+			}
+			div.note-content {
+				background: #2c3e49;
+				color: #cccccc;
+			}
+		}
+		/* Visual Studio Code Color Theme */
+		html[style*="--vscode"] body {
+			color: var(--vscode-editor-foreground);
+			background-color: var(--vscode-editor-background);
+		}
+		html[style*="--vscode"] pre {
+			border: 1px solid var(--vscode-panel-border);
+			background: var(--vscode-sideBar-background);
+		}
+		html[style*="--vscode"] h2, html[style*="--vscode"] h1 {
+			border-top-color: var(--vscode-panel-border);
+		}
+		html[style*="--vscode"] a {
+			color: var(--vscode-textLink-foreground);
+			text-decoration: none;
+		}
+		html[style*="--vscode"] a:hover {
+			text-decoration: underline;
+			color: var(--vscode-textLink-activeForeground);
+		}
+		html[style*="--vscode"] .fa {
+			color: var(--vscode-foreground);
+		}
+		html[style*="--vscode"] .fa:hover {
+			text-decoration: none;
+			color: var(--vscode-textLink-activeForeground);
+		}
+		html[style*="--vscode"] div.note-header, html[style*="--vscode"] a#scroll-up {
+			text-decoration: none;
+			background: var(--vscode-button-background);
+			color: var(--vscode-button-foreground);
+		}
+		html[style*="--vscode"] div.note-content {
+			background: var(--vscode-quickInput-background);
+			color: var(--vscode-quickInput-foreground);
+		}
+	</style>
+</head>
+
+<body>
+	<a id="scroll-up" href="#">▲</a>
+
+	<h1>Software Bill of Material Report</h1>
+
+	
+
+	
+
+	<div>This report was generated from the following inputs:</div>
+	<ul>
+		
+		<li><span class="src">Files: &#34;./**/*.a&#34; (relative to &#34;/home/doki/work/ncs2/nrfxlib&#34;)</span></li>
+		
+	</ul>
+
+	<div>The files are covered by the following licenses:</div>
+	<ul>
+		
+		
+		<li><a href="#LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</a></li>
+		
+		
+		
+		<li><a href="#LICENSEREF-WEST-NCS-SBOM-ARM-OBJ-AND-HEADER">LicenseRef-west-ncs-sbom-ARM-obj-and-header</a></li>
+		
+		
+		
+		<li><a href="#LICENSEREF-ZBOSS-NORDIC-4-CLAUSE">LicenseRef-ZBOSS-Nordic-4-Clause</a></li>
+		
+		
+		
+		<li><a href="#BSD-3-CLAUSE">BSD-3-Clause</a></li>
+		
+		
+		
+	</ul>
+
+	<div>The texts of the following licenses are added to this report:</div>
+	<ul>
+		
+			<li><a href="#text-LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</a></li>
+		
+			<li><a href="#text-LICENSEREF-WEST-NCS-SBOM-ARM-OBJ-AND-HEADER">LicenseRef-west-ncs-sbom-ARM-obj-and-header</a></li>
+		
+			<li><a href="#text-LICENSEREF-ZBOSS-NORDIC-4-CLAUSE">LicenseRef-ZBOSS-Nordic-4-Clause</a></li>
+		
+	</ul>
+
+	<h1 id="license-details">License details</h1>
+
+	
+
+	
+	
+	<h2 id="LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				Nordic 5-Clause License
+			
+			
+			
+				<br /><a href="#text-LICENSEREF-NORDIC-5-CLAUSE">The license text</a> is added to this report.
+			
+		
+	</div>
+	<pre>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_mbedcrypto/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_mbedcrypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_mbedcrypto/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_platform_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_platform_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc312_platform/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc312_psa_crypto_0.9.13.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/short-wchar/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m0/soft-float/short-wchar/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/short-wchar/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/hard-float/short-wchar/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/short-wchar/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33/soft-float/short-wchar/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/short-wchar/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m33+nodsp/soft-float/short-wchar/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/short-wchar/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/hard-float/short-wchar/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/short-wchar/liboberon_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/short-wchar/liboberon_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/short-wchar/liboberon_mbedtls_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/short-wchar/liboberon_psa_3.0.10.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/short-wchar/liboberon_psa_3.0.10.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52810/soft-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52810/soft-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52811/soft-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52811/soft-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52820/soft-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52820/soft-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52832/hard-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52832/hard-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52832/soft-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52832/soft-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52833/hard-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52833/hard-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52833/soft-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52833/soft-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52840/hard-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52840/hard-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52840/soft-float/libgzll.a" class="fa">/home/doki/work/ncs2/nrfxlib/gzll/lib/nRF52840/soft-float/libgzll.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m33+nodsp/soft-float/libmpsl.a" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m33+nodsp/soft-float/libmpsl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/hard-float/libmpsl.a" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/hard-float/libmpsl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/soft-float/libmpsl.a" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/soft-float/libmpsl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/softfp-float/libmpsl.a" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/softfp-float/libmpsl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/hard-float/libnfc_t2t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/hard-float/libnfc_t2t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/hard-float/libnfc_t4t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/hard-float/libnfc_t4t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/soft-float/libnfc_t2t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/soft-float/libnfc_t2t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/soft-float/libnfc_t4t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m33/soft-float/libnfc_t4t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/hard-float/libnfc_t2t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/hard-float/libnfc_t2t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/hard-float/libnfc_t4t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/hard-float/libnfc_t4t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/soft-float/libnfc_t2t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/soft-float/libnfc_t2t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/soft-float/libnfc_t4t.a" class="fa">/home/doki/work/ncs2/nrfxlib/nfc/lib/cortex-m4/soft-float/libnfc_t4t.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52811/soft-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52811/soft-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52820/soft-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52820/soft-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52833/hard-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52833/hard-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52833/soft-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52833/soft-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52833/softfp-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52833/softfp-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52840/hard-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52840/hard-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52840/soft-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52840/soft-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52840/softfp-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF52840/softfp-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF5340_CPUNET/soft-float/libnrf-802154-sl.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_802154/sl/sl/lib/nRF5340_CPUNET/soft-float/libnrf-802154-sl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_dm/lib/nRF52833/hard-float/libnrf_dm.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_dm/lib/nRF52833/hard-float/libnrf_dm.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_dm/lib/nRF52840/hard-float/libnrf_dm.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_dm/lib/nRF52840/hard-float/libnrf_dm.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/hard-float/libmodem.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/hard-float/libmodem.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/hard-float/libmodem_log.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/hard-float/libmodem_log.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/soft-float/libmodem.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/soft-float/libmodem.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/soft-float/libmodem_log.a" class="fa">/home/doki/work/ncs2/nrfxlib/nrf_modem/lib/cortex-m33/soft-float/libmodem_log.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m33+nodsp/soft-float/libsoftdevice_controller_multirole.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m33+nodsp/soft-float/libsoftdevice_controller_multirole.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/hard-float/libsoftdevice_controller_central.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/hard-float/libsoftdevice_controller_central.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/hard-float/libsoftdevice_controller_multirole.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/hard-float/libsoftdevice_controller_multirole.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/hard-float/libsoftdevice_controller_peripheral.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/hard-float/libsoftdevice_controller_peripheral.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_central.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_central.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_multirole.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_multirole.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_peripheral.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_peripheral.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/softfp-float/libsoftdevice_controller_central.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/softfp-float/libsoftdevice_controller_central.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/softfp-float/libsoftdevice_controller_multirole.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/softfp-float/libsoftdevice_controller_multirole.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/softfp-float/libsoftdevice_controller_peripheral.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/softfp-float/libsoftdevice_controller_peripheral.a</a>
+</pre>
+	
+	
+	
+	<h2 id="LICENSEREF-WEST-NCS-SBOM-ARM-OBJ-AND-HEADER">LicenseRef-west-ncs-sbom-ARM-obj-and-header</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				ARM Object Code and Header Files License
+			
+			
+			
+				<br /><a href="#text-LICENSEREF-WEST-NCS-SBOM-ARM-OBJ-AND-HEADER">The license text</a> is added to this report.
+			
+		
+	</div>
+	<pre>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/short-wchar/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/hard-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/short-wchar/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m33/soft-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/short-wchar/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/hard-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/short-wchar/libnrf_cc310_bl_0.9.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_bl/lib/cortex-m4/soft-float/short-wchar/no-interrupts/libnrf_cc310_bl_0.9.12.a</a>
+</pre>
+	
+	
+	
+	<h2 id="LICENSEREF-ZBOSS-NORDIC-4-CLAUSE">LicenseRef-ZBOSS-Nordic-4-Clause</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				Nordic proprietary 4-clause license for ZBOSS sources
+			
+			
+			
+				<br /><a href="#text-LICENSEREF-ZBOSS-NORDIC-4-CLAUSE">The license text</a> is added to this report.
+			
+		
+	</div>
+	<pre>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m33/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/lib/cortex-m4/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m33/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/development/trace/lib/cortex-m4/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libgppb.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libgppb.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m33/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libgppb.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libgppb.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/lib/cortex-m4/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libgppb.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libgppb.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m33/hard-float/libzboss.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libgppb.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libgppb.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libgppb.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libgppb.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libncp-dev.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libncp-dev.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libncp-dev.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libncp-dev.ed.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libzboss.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libzboss.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libzboss.ed.a" class="fa">/home/doki/work/ncs2/nrfxlib/zboss/production/trace/lib/cortex-m4/hard-float/libzboss.ed.a</a>
+</pre>
+	
+	
+	
+	<h2 id="BSD-3-CLAUSE">BSD-3-Clause</h2>
+	<div>
+		
+			
+			
+				BSD 3-Clause &#34;New&#34; or &#34;Revised&#34; License
+			
+			
+				<br /><a href="https://spdx.org/licenses/BSD-3-Clause.html">https://spdx.org/licenses/BSD-3-Clause.html</a>
+			
+			
+		
+	</div>
+	<pre>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/ftd/oberon/libopenthread-cli-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/ftd/oberon/libopenthread-cli-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/ftd/oberon/libopenthread-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/ftd/oberon/libopenthread-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/mtd/oberon/libopenthread-cli-mtd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/mtd/oberon/libopenthread-cli-mtd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/mtd/oberon/libopenthread-mtd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m33/hard-float/v1.1/mtd/oberon/libopenthread-mtd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/ftd/oberon/libopenthread-cli-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/ftd/oberon/libopenthread-cli-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/ftd/oberon/libopenthread-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/ftd/oberon/libopenthread-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/master/oberon/libopenthread-cli-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/master/oberon/libopenthread-cli-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/master/oberon/libopenthread-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/master/oberon/libopenthread-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/mtd/oberon/libopenthread-cli-mtd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/mtd/oberon/libopenthread-cli-mtd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/mtd/oberon/libopenthread-mtd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.1/mtd/oberon/libopenthread-mtd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.2/ftd/oberon/libopenthread-cli-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.2/ftd/oberon/libopenthread-cli-ftd.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.2/ftd/oberon/libopenthread-ftd.a" class="fa">/home/doki/work/ncs2/nrfxlib/openthread/lib/cortex-m4/hard-float/v1.2/ftd/oberon/libopenthread-ftd.a</a>
+</pre>
+	
+	
+
+	<h1>Custom license texts</h1>
+
+	
+	<h2 id="text-LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</h2>
+	<pre>Copyright (c) Nordic Semiconductor ASA
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form, except as embedded into a Nordic
+   Semiconductor ASA integrated circuit in a product or a software update for
+   such product, must reproduce the above copyright notice, this list of
+   conditions and the following disclaimer in the documentation and/or other
+   materials provided with the distribution.
+
+3. Neither the name of Nordic Semiconductor ASA nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+4. This software, with or without modification, must only be used with a
+   Nordic Semiconductor ASA integrated circuit.
+
+5. Any software provided in binary form under this license must not be reverse
+   engineered, decompiled, modified and/or disassembled.
+
+THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA &#34;AS IS&#34; AND ANY EXPRESS
+OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</pre>
+	
+	<h2 id="text-LICENSEREF-WEST-NCS-SBOM-ARM-OBJ-AND-HEADER">LicenseRef-west-ncs-sbom-ARM-obj-and-header</h2>
+	<pre>Version 1.0
+
+Redistribution.
+
+Redistribution and use of object code, header files, and
+documentation, without modification, are permitted provided that the following
+conditions are met:
+1) Redistributions must reproduce the above copyright notice and the
+  following disclaimer in the documentation and/or other materials
+  provided with the distribution.
+2) Unless to the extent explicitly permitted by law, no reverse
+  engineering, decompilation, or disassembly of is permitted.
+3) Redistribution and use is permitted solely for the purpose of
+  developing or executing applications that are targeted for use
+  on an ARM-based product.
+
+DISCLAIMER. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS &#34;AS IS.&#34; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, NON-INFRINGEMENT,
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</pre>
+	
+	<h2 id="text-LICENSEREF-ZBOSS-NORDIC-4-CLAUSE">LicenseRef-ZBOSS-Nordic-4-Clause</h2>
+	<pre>Use in source and binary forms, redistribution in binary form only, with
+or without modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions in binary form, except as embedded into a Nordic
+  Semiconductor ASA integrated circuit in a product or a software update for
+  such product, must reproduce the above copyright notice, this list of
+  conditions and the following disclaimer in the documentation and/or other
+  materials provided with the distribution.
+
+2. Neither the name of Nordic Semiconductor ASA nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+3. This software, with or without modification, must only be used with a Nordic
+  Semiconductor ASA integrated circuit.
+
+4. Any software provided in binary form under this license must not be reverse
+  engineered, decompiled, modified and/or disassembled.
+
+THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA &#34;AS IS&#34; AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</pre>
+	
+</body>
+
+</html>
