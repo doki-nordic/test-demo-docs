@@ -1,0 +1,1607 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SBOM Report</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Slab&display=swap');
+		/* Nordic Default Theme */
+		body {
+			font-family: Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
+			color: #404040;
+			margin: 51px;
+			font-size: 16px;
+			background-color: white;
+		}
+		pre {
+			font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+			font-size: 12px;
+			line-height: 1.4;
+			padding: 12px;
+			border: 1px solid #e1e4e5;
+			margin: 1px 0 24px;
+			background: #f8f8f8;
+			min-width: fit-content;
+		}
+		pre.list {
+			padding: 0px 12px 12px;
+		}
+		h1 {
+			font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif;
+			border-top: 1px solid #ddd;
+			padding-top: 20px;
+			margin-top: 0px;
+			margin-bottom: 24px;
+		}
+		h2 {
+			font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif;
+			border-top: 1px solid #ddd;
+			padding-top: 24px;
+			margin-top: 0px;
+			margin-bottom: 24px;
+		}
+		a {
+			color: #00a9ce;
+			text-decoration: none;
+		}
+		a:hover {
+			color: #0077C8;
+		}
+		div, p {
+			line-height: 24px;
+			margin-block-start: 1em;
+			margin-block-end: 1em;
+			margin-inline-start: 0px;
+			margin-inline-end: 0px;
+		}
+		.src {
+			font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+			font-size: 12px;
+		}
+		.fa {
+			text-decoration: none;
+			color: #404040;
+		}
+		.fa:hover {
+			text-decoration: none;
+			color: #0077C8;
+		}
+		div.package {
+			background: #e7f2fa;
+			color: #404040;
+			padding: 8px 12px;
+			margin: 16px 0px 8px;
+			line-height: 1.7;
+			border: 1px solid #e1e4e5;
+		}
+		span.modifications {
+			font-weight: bold;
+			display: inline-block;
+			border: 1px solid #e1e4e5;
+			padding: 3px 7px 2px;
+			border-radius: 4px;
+			background-color: white;
+		}
+		div.note-header {
+			background: #6ab0de;
+			color: white;
+			font-weight: bold;
+			padding: 4px 4px 4px 12px;
+			margin-bottom: 0px;
+		}
+		div.note-content {
+			background: #e7f2fa;
+			color: #404040;
+			padding: 12px;
+			margin-top: 0px;
+		}
+		a#scroll-up {
+			line-height: normal;
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			display: block;
+			background: #6ab0de;
+			width: 56px;
+			height: 50px;
+			border-radius: 28px;
+			color: white;
+			text-align: center;
+			font-size: 30px;
+			padding-top: 6px;
+			box-shadow: 1px 3px 10px 0px #222222
+		}
+		a#scroll-up:hover {
+			box-shadow: 1px 3px 14px 3px #222222
+		}
+		span[class^="-icon-"] {
+			width: 14px;
+			height: 14px;
+			vertical-align: -1px;
+			display: inline-block;
+			background-size: 100% 100%;
+		}
+		span.-icon-exclamation {
+			background-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%3Csvg%20version%3D%221.1%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%222.5%22%20width%3D%223%22%20height%3D%227%22%20fill%3D%22%236ab0de%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%2210.5%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%236ab0de%22%2F%3E%3C%2Fsvg%3E');
+		}
+		/* Dark Color Theme */
+		@media (prefers-color-scheme: dark) {
+			body {
+				color: #cccccc;
+				background-color: #292929;
+			}
+			pre {
+				border: 1px solid #474747;
+				background: #333333;
+			}
+			h2, h1 {
+				border-top-color: #444444;
+			}
+			a:hover {
+				color: #66d1e9;
+			}
+			.fa {
+				color: #cccccc;
+			}
+			.fa:hover {
+				color: #66d1e9;
+			}
+			div.package {
+				background: #2c3e49;
+				color: #cccccc;
+				border: 1px solid #474747;
+			}
+			span.modifications {
+				border: 1px solid #474747;
+				background-color: #292929;
+			}
+			div.note-header, a#scroll-up {
+				background: #447291;
+			}
+			div.note-content {
+				background: #2c3e49;
+				color: #cccccc;
+			}
+		}
+		/* Visual Studio Code Color Theme */
+		html[style*="--vscode"] body {
+			color: var(--vscode-editor-foreground);
+			background-color: var(--vscode-editor-background);
+		}
+		html[style*="--vscode"] pre {
+			border: 1px solid var(--vscode-panel-border);
+			background: var(--vscode-sideBar-background);
+		}
+		html[style*="--vscode"] h2, html[style*="--vscode"] h1 {
+			border-top-color: var(--vscode-panel-border);
+		}
+		html[style*="--vscode"] a {
+			color: var(--vscode-textLink-foreground);
+			text-decoration: none;
+		}
+		html[style*="--vscode"] a:hover {
+			text-decoration: underline;
+			color: var(--vscode-textLink-activeForeground);
+		}
+		html[style*="--vscode"] .fa {
+			color: var(--vscode-foreground);
+		}
+		html[style*="--vscode"] .fa:hover {
+			text-decoration: none;
+			color: var(--vscode-textLink-activeForeground);
+		}
+		html[style*="--vscode"] div.package {
+			background: var(--vscode-quickInput-background);
+			color: var(--vscode-quickInput-foreground);
+			border: 1px solid var(--vscode-panel-border);
+		}
+		html[style*="--vscode"] span.modifications {
+			border: 1px solid var(--vscode-panel-border);
+			background-color: var(--vscode-quickInput-background);
+		}
+		html[style*="--vscode"] div.note-header, html[style*="--vscode"] a#scroll-up {
+			text-decoration: none;
+			background: var(--vscode-button-background);
+			color: var(--vscode-button-foreground);
+		}
+		html[style*="--vscode"] div.note-content {
+			background: var(--vscode-quickInput-background);
+			color: var(--vscode-quickInput-foreground);
+		}
+	</style>
+</head>
+
+<body>
+	<a id="scroll-up" href="#">▲</a>
+
+	<h1>Software Bill of Material Report</h1>
+
+	
+	<div class="note-header">
+		<span class="-icon-exclamation"></span>&nbsp; Note
+	</div>
+	<div class="note-content">
+		Some of the files in the report do no contain license information or it cannot be detected.
+		See <a href="#no-license">license details</a> for list of such files.
+		You need to evaluate them manually to get the license information.
+	</div>
+	
+
+	
+
+	<div>This report was generated from the following inputs:</div>
+	<ul>
+		
+		<li><span class="src">The &#34;zephyr/zephyr.elf&#34; file from the build directory &#34;/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840&#34;</span></li>
+		
+	</ul>
+
+	<div>The files are covered by the following licenses:</div>
+	<ul>
+		
+		
+		
+		
+		<li><a href="#BSD-3-CLAUSE-UC">BSD-3-CLAUSE-UC</a></li>
+		
+		
+		
+		<li><a href="#LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</a></li>
+		
+		
+		
+		<li><a href="#LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">LicenseRef-west-ncs-sbom-BSD-1-Clause-SEGGER</a></li>
+		
+		
+		
+		<li><a href="#LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">LicenseRef-west-ncs-sbom-BSD-3-Clause-Intel</a></li>
+		
+		
+		
+		<li><a href="#NORDIC-5-CLAUSE">NORDIC-5-CLAUSE</a></li>
+		
+		
+		
+		<li><a href="#GPL-3.0-OR-LATER WITH GCC-EXCEPTION-3.1">GPL-3.0-or-later WITH GCC-EXCEPTION-3.1</a></li>
+		
+		
+		
+		<li><a href="#APACHE-2.0">Apache-2.0</a></li>
+		
+		
+		
+		<li><a href="#BSD-3-CLAUSE">BSD-3-Clause</a></li>
+		
+		
+		
+		<li><a href="#CC0-1.0">CC0-1.0</a></li>
+		
+		
+		
+		
+		
+		<li><a href="#MIT">MIT</a></li>
+		
+		
+		
+		<li><a href="#no-license">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+
+	<div>The files are obtained from the following sources:</div>
+	<ul>
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201">nrfconnect/sdk-nrf, version 45da1229c4c6d272d45eb77828aeafa0d2bdd201</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8">nrfconnect/sdk-nrfxlib, version 5a16b708e83a0b210eab610a8aba0fd3e05d3ba8</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr, version c5340c156e0ce042b21ae716906b2746a7835343</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/CMSIS#093DE61C2A7D12DC9253DAF8692F61F793A9254A">zephyrproject-rtos/cmsis, version 093de61c2a7d12dc9253daf8692f61f793a9254a</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E">zephyrproject-rtos/hal_nordic, version 249199ec5a5c31d170659921048764e96d05cc0e</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/SEGGER#D4E568A920B4BD087886170A5624C167B2D0665E">zephyrproject-rtos/segger, version d4e568a920b4bd087886170a5624c167b2d0665e</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/TINYCRYPT#3E9A49D2672EC01435FFBF0D788DB6D95EF28DE0">zephyrproject-rtos/tinycrypt, version 3e9a49d2672ec01435ffbf0d788db6d95ef28de0</a></li>
+		
+		
+		
+		<li><a href="#no-package">Unknown source</a> that cannot be detected automatically</li>
+		
+	</ul>
+
+	<div>The texts of the following licenses are added to this report:</div>
+	<ul>
+		
+			<li><a href="#text-LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</a></li>
+		
+			<li><a href="#text-LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">LicenseRef-west-ncs-sbom-BSD-1-Clause-SEGGER</a></li>
+		
+			<li><a href="#text-LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">LicenseRef-west-ncs-sbom-BSD-3-Clause-Intel</a></li>
+		
+	</ul>
+
+	<h1 id="license-details">License details</h1>
+
+	
+	<h2 id="no-license">No license information detected</h2>
+	<div>Files without any license information or with license information that cannot be detected automatically.</div>
+	<pre class="list">
+<div class="package" id="package##">Repository: Unknown
+Version:    Unknown</div><a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/dev_handles.c" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/dev_handles.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/autoconf.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/autoconf.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/devicetree_generated.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/devicetree_generated.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/kobj-types-enum.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/kobj-types-enum.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/libc/minimal/strerror_table.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/libc/minimal/strerror_table.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/offsets.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/offsets.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscall_list.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscall_list.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/device.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/device.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/entropy.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/entropy.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/errno_private.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/errno_private.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/gpio.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/gpio.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/kernel.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/kernel.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/kobject.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/kobject.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/libc-hooks.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/libc-hooks.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/log_ctrl.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/log_ctrl.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/log_msg.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/log_msg.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/mem_manage.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/mem_manage.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/rand32.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/rand32.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/time.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/time.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/uart.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/syscalls/uart.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/version.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/include/generated/version.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/isr_tables.c" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/isr_tables.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/linker.cmd" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/linker.cmd</a>
+<a href="file:////home/doki/zephyr-sdk/arm-zephyr-eabi/lib/gcc/arm-zephyr-eabi/12.1.0/thumb/v7e-m/nofp/libgcc.a" class="fa">/home/doki/zephyr-sdk/arm-zephyr-eabi/lib/gcc/arm-zephyr-eabi/12.1.0/thumb/v7e-m/nofp/libgcc.a</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201#">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201">nrfconnect/sdk-nrf</a>
+Version:    45da1229c4c6d272d45eb77828aeafa0d2bdd201</div><a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/img.file" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/img.file</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/ecdh.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/ecdh.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/ecdh.h" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/ecdh.h</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8#">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8">nrfconnect/sdk-nrfxlib</a>
+Version:    5a16b708e83a0b210eab610a8aba0fd3e05d3ba8</div><a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_platform_0.9.15.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/lib/cortex-m4/soft-float/no-interrupts/libnrf_cc310_platform_0.9.15.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_3.0.12.a" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/lib/cortex-m4/soft-float/liboberon_3.0.12.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/soft-float/libmpsl.a" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/lib/cortex-m4/soft-float/libmpsl.a</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_multirole.a" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/lib/cortex-m4/soft-float/libsoftdevice_controller_multirole.a</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</a>
+Version:    c5340c156e0ce042b21ae716906b2746a7835343</div><a href="file:////home/doki/work/ncs2/zephyr/misc/empty_file.c" class="fa">/home/doki/work/ncs2/zephyr/misc/empty_file.c</a>
+</pre>
+	
+
+	
+	
+	
+	
+	<h2 id="BSD-3-CLAUSE-UC">BSD-3-CLAUSE-UC</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				BSD-3-CLAUSE-UC
+			
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#BSD-3-CLAUSE-UC">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</a>
+Version:    c5340c156e0ce042b21ae716906b2746a7835343</div><a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtoll.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtoll.c</a>
+</pre>
+	
+	
+	
+	<h2 id="LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				Nordic 5-Clause License
+			
+			
+			
+				<br /><a href="#text-LICENSEREF-NORDIC-5-CLAUSE">The license text</a> is added to this report.
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201#LICENSEREF-NORDIC-5-CLAUSE">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201">nrfconnect/sdk-nrf</a>
+Version:    45da1229c4c6d272d45eb77828aeafa0d2bdd201</div><a href="file:////home/doki/work/ncs2/nrf/drivers/entropy/entropy_cc3xx.c" class="fa">/home/doki/work/ncs2/nrf/drivers/entropy/entropy_cc3xx.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/drivers/hw_cc310/hw_cc310.c" class="fa">/home/doki/work/ncs2/nrf/drivers/hw_cc310/hw_cc310.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/drivers/mpsl/clock_control/nrfx_clock_mpsl.c" class="fa">/home/doki/work/ncs2/nrf/drivers/mpsl/clock_control/nrfx_clock_mpsl.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/drivers/mpsl/clock_control/nrfx_power_clock.h" class="fa">/home/doki/work/ncs2/nrf/drivers/mpsl/clock_control/nrfx_power_clock.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/include/bluetooth/gatt_dm.h" class="fa">/home/doki/work/ncs2/nrf/include/bluetooth/gatt_dm.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/include/bluetooth/scan.h" class="fa">/home/doki/work/ncs2/nrf/include/bluetooth/scan.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/include/bluetooth/services/throughput.h" class="fa">/home/doki/work/ncs2/nrf/include/bluetooth/services/throughput.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/include/dk_buttons_and_leds.h" class="fa">/home/doki/work/ncs2/nrf/include/dk_buttons_and_leds.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/include/mpsl/mpsl_assert.h" class="fa">/home/doki/work/ncs2/nrf/include/mpsl/mpsl_assert.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/include/mpsl/mpsl_work.h" class="fa">/home/doki/work/ncs2/nrf/include/mpsl/mpsl_work.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/lib/dk_buttons_and_leds/dk_buttons_and_leds.c" class="fa">/home/doki/work/ncs2/nrf/lib/dk_buttons_and_leds/dk_buttons_and_leds.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/lib/fatal_error/fatal_error.c" class="fa">/home/doki/work/ncs2/nrf/lib/fatal_error/fatal_error.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/lib/multithreading_lock/multithreading_lock.c" class="fa">/home/doki/work/ncs2/nrf/lib/multithreading_lock/multithreading_lock.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/lib/multithreading_lock/multithreading_lock.h" class="fa">/home/doki/work/ncs2/nrf/lib/multithreading_lock/multithreading_lock.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/cmds.c" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/cmds.c</a> <span class="modifications">with local modifications</span>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/main.c" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/main.c</a> <span class="modifications">with local modifications</span>
+<a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/main.h" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/src/main.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/bt_ctlr_used_resources.h" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/bt_ctlr_used_resources.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/crypto.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/crypto.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/hci_driver.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/hci_driver.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/hci_internal.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/hci_internal.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/hci_internal.h" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/hci_internal.h</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/gatt_dm.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/gatt_dm.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/scan.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/scan.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/services/throughput.c" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/services/throughput.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/mpsl/fem/api_init/mpsl_fem_api_init.c" class="fa">/home/doki/work/ncs2/nrf/subsys/mpsl/fem/api_init/mpsl_fem_api_init.c</a>
+<a href="file:////home/doki/work/ncs2/nrf/subsys/mpsl/init/mpsl_init.c" class="fa">/home/doki/work/ncs2/nrf/subsys/mpsl/init/mpsl_init.c</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8#LICENSEREF-NORDIC-5-CLAUSE">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8">nrfconnect/sdk-nrfxlib</a>
+Version:    5a16b708e83a0b210eab610a8aba0fd3e05d3ba8</div><a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_abort.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_abort.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_ctr_drbg.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_ctr_drbg.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_defines.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_defines.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_mutex.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/include/nrf_cc3xx_platform_mutex.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/src/nrf_cc3xx_platform_abort_zephyr.c" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/src/nrf_cc3xx_platform_abort_zephyr.c</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/src/nrf_cc3xx_platform_mutex_zephyr.c" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_cc310_platform/src/nrf_cc3xx_platform_mutex_zephyr.c</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_curve_p256.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_curve_p256.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_ecdh_p256.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_ecdh_p256.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_sc_p256.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_sc_p256.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_sha512.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_sha512.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_types.h" class="fa">/home/doki/work/ncs2/nrfxlib/crypto/nrf_oberon/include/ocrypto_types.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl.h" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl_clock.h" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl_clock.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl_fem_init.h" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl_fem_init.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl_timeslot.h" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/include/mpsl_timeslot.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/mpsl/include/nrf_errno.h" class="fa">/home/doki/work/ncs2/nrfxlib/mpsl/include/nrf_errno.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_controller_baseband.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_controller_baseband.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_info_params.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_info_params.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_le.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_le.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_link_control.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_link_control.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_status_params.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_cmd_status_params.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_vs.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_hci_vs.h</a>
+<a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_soc.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/sdc_soc.h</a>
+</pre>
+	
+	
+	
+	<h2 id="LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">LicenseRef-west-ncs-sbom-BSD-1-Clause-SEGGER</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				BSD 1-Clause License (SEGGER-Specific)
+			
+			
+			
+				<br /><a href="#text-LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">The license text</a> is added to this report.
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/SEGGER#D4E568A920B4BD087886170A5624C167B2D0665E#LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/SEGGER#D4E568A920B4BD087886170A5624C167B2D0665E">zephyrproject-rtos/segger</a>
+Version:    d4e568a920b4bd087886170a5624c167b2d0665e</div><a href="file:////home/doki/work/ncs2/modules/debug/segger/Config/SEGGER_RTT_Conf.h" class="fa">/home/doki/work/ncs2/modules/debug/segger/Config/SEGGER_RTT_Conf.h</a>
+<a href="file:////home/doki/work/ncs2/modules/debug/segger/SEGGER/SEGGER_RTT.c" class="fa">/home/doki/work/ncs2/modules/debug/segger/SEGGER/SEGGER_RTT.c</a>
+<a href="file:////home/doki/work/ncs2/modules/debug/segger/SEGGER/SEGGER_RTT.h" class="fa">/home/doki/work/ncs2/modules/debug/segger/SEGGER/SEGGER_RTT.h</a>
+</pre>
+	
+	
+	
+	<h2 id="LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">LicenseRef-west-ncs-sbom-BSD-3-Clause-Intel</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				Variant of BSD-3-Clause license with &#34;Intel Corporation&#34; as a copyright holder.
+			
+			
+			
+				<br /><a href="#text-LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">The license text</a> is added to this report.
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/TINYCRYPT#3E9A49D2672EC01435FFBF0D788DB6D95EF28DE0#LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/TINYCRYPT#3E9A49D2672EC01435FFBF0D788DB6D95EF28DE0">zephyrproject-rtos/tinycrypt</a>
+Version:    3e9a49d2672ec01435ffbf0d788db6d95ef28de0</div><a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/aes.h" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/aes.h</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/ccm_mode.h" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/ccm_mode.h</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/cmac_mode.h" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/cmac_mode.h</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/constants.h" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/constants.h</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/utils.h" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/include/tinycrypt/utils.h</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/aes_decrypt.c" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/aes_decrypt.c</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/aes_encrypt.c" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/aes_encrypt.c</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/cmac_mode.c" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/cmac_mode.c</a>
+<a href="file:////home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/utils.c" class="fa">/home/doki/work/ncs2/modules/crypto/tinycrypt/lib/source/utils.c</a>
+</pre>
+	
+	
+	
+	<h2 id="NORDIC-5-CLAUSE">NORDIC-5-CLAUSE</h2>
+	<div>
+		
+			
+				Non-standard SPDX License:
+			
+			
+				NORDIC-5-CLAUSE
+			
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8#NORDIC-5-CLAUSE">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8">nrfconnect/sdk-nrfxlib</a>
+Version:    5a16b708e83a0b210eab610a8aba0fd3e05d3ba8</div><a href="file:////home/doki/work/ncs2/nrfxlib/softdevice_controller/include/nrf_errno.h" class="fa">/home/doki/work/ncs2/nrfxlib/softdevice_controller/include/nrf_errno.h</a>
+</pre>
+	
+	
+	
+	<h2 id="GPL-3.0-OR-LATER WITH GCC-EXCEPTION-3.1">GPL-3.0-or-later WITH GCC-EXCEPTION-3.1</h2>
+	<div>
+		
+			The license expression
+			
+			
+				containing the following licenses:<ul>
+				
+					<li>
+					GPL-3.0-or-later<br />
+					
+					
+						GNU General Public License v3.0 or later
+					
+					
+						<br /><a href="https://spdx.org/licenses/GPL-3.0-or-later.html">https://spdx.org/licenses/GPL-3.0-or-later.html</a>
+					
+					
+					</li>
+				
+			
+			</ul>
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package##GPL-3.0-OR-LATER WITH GCC-EXCEPTION-3.1">Repository: Unknown
+Version:    Unknown</div><a href="file:////home/doki/zephyr-sdk/arm-zephyr-eabi/lib/gcc/arm-zephyr-eabi/12.1.0/include/stdarg.h" class="fa">/home/doki/zephyr-sdk/arm-zephyr-eabi/lib/gcc/arm-zephyr-eabi/12.1.0/include/stdarg.h</a>
+<a href="file:////home/doki/zephyr-sdk/arm-zephyr-eabi/lib/gcc/arm-zephyr-eabi/12.1.0/include/stddef.h" class="fa">/home/doki/zephyr-sdk/arm-zephyr-eabi/lib/gcc/arm-zephyr-eabi/12.1.0/include/stddef.h</a>
+</pre>
+	
+	
+	
+	<h2 id="APACHE-2.0">Apache-2.0</h2>
+	<div>
+		
+			
+			
+				Apache License 2.0
+			
+			
+				<br /><a href="https://spdx.org/licenses/Apache-2.0.html">https://spdx.org/licenses/Apache-2.0.html</a>
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package##APACHE-2.0">Repository: Unknown
+Version:    Unknown</div><a href="file:////home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/misc/generated/configs.c" class="fa">/home/doki/work/ncs2/nrf/samples/bluetooth/throughput/build_nrf52840dk_nrf52840/zephyr/misc/generated/configs.c</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201#APACHE-2.0">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201">nrfconnect/sdk-nrf</a>
+Version:    45da1229c4c6d272d45eb77828aeafa0d2bdd201</div><a href="file:////home/doki/work/ncs2/nrf/subsys/bluetooth/controller/radio_nrf5_txp.h" class="fa">/home/doki/work/ncs2/nrf/subsys/bluetooth/controller/radio_nrf5_txp.h</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#APACHE-2.0">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</a>
+Version:    c5340c156e0ce042b21ae716906b2746a7835343</div><a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/exc_exit.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/exc_exit.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/fault.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/fault.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/fault_s.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/fault_s.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/fpu.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/fpu.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/irq_init.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/irq_init.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/reset.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/reset.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/scb.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/scb.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/thread_abort.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/thread_abort.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/vector_table.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/vector_table.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/vector_table.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cortex_m/vector_table.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cpu_idle.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/cpu_idle.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/fatal.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/fatal.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/irq_manage.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/irq_manage.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/isr_wrapper.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/isr_wrapper.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_core_mpu.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_core_mpu.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_core_mpu_dev.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_core_mpu_dev.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_mpu.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_mpu.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_mpu_v7_internal.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/arm_mpu_v7_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/cortex_m/arm_mpu_internal.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/mpu/cortex_m/arm_mpu_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/nmi.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/nmi.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/nmi_on_reset.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/nmi_on_reset.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/prep_c.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/prep_c.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/swap.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/swap.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/swap_helper.S" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/swap_helper.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/thread.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/aarch32/thread.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/offsets/offsets.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/offsets/offsets.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/core/offsets/offsets_aarch32.c" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/core/offsets/offsets_aarch32.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/cortex_m/exc.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/cortex_m/exc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/cortex_m/stack.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/cortex_m/stack.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/kernel_arch_func.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/kernel_arch_func.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/offsets_short_arch.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/aarch32/offsets_short_arch.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/kernel_arch_data.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/kernel_arch_data.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/kernel_arch_func.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/kernel_arch_func.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/arm/include/offsets_short_arch.h" class="fa">/home/doki/work/ncs2/zephyr/arch/arm/include/offsets_short_arch.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/common/isr_tables.c" class="fa">/home/doki/work/ncs2/zephyr/arch/common/isr_tables.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/arch/common/sw_isr_common.c" class="fa">/home/doki/work/ncs2/zephyr/arch/common/sw_isr_common.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/clock_control/clock_control_nrf.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/clock_control/clock_control_nrf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/clock_control/nrf_clock_calibration.h" class="fa">/home/doki/work/ncs2/zephyr/drivers/clock_control/nrf_clock_calibration.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/console/uart_console.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/console/uart_console.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/entropy/entropy_bt_hci.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/entropy/entropy_bt_hci.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/entropy/entropy_nrf5.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/entropy/entropy_nrf5.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/gpio/gpio_nrfx.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/gpio/gpio_nrfx.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/gpio/gpio_utils.h" class="fa">/home/doki/work/ncs2/zephyr/drivers/gpio/gpio_utils.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/pinctrl/common.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/pinctrl/common.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/pinctrl/pinctrl_nrf.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/pinctrl/pinctrl_nrf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/serial/uart_nrfx_uarte.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/serial/uart_nrfx_uarte.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/timer/nrf_rtc_timer.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/timer/nrf_rtc_timer.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/drivers/timer/sys_clock_init.c" class="fa">/home/doki/work/ncs2/zephyr/drivers/timer/sys_clock_init.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/app_memory/app_memdomain.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/app_memory/app_memdomain.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/app_memory/mem_domain.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/app_memory/mem_domain.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arch_inlines.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arch_inlines.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/arch.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/arch.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/arch_inlines.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/arch_inlines.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/asm_inline.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/asm_inline.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/asm_inline_gcc.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/asm_inline_gcc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/cmsis.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/cmsis.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/cpu.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/cpu.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/fpu.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/fpu.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/memory_map.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/memory_map.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/nvic.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/cortex_m/nvic.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/error.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/error.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/exc.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/exc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/irq.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/irq.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/misc.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/misc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/mpu/arm_mpu.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/mpu/arm_mpu.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/mpu/arm_mpu_v7m.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/mpu/arm_mpu_v7m.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/nmi.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/nmi.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/syscall.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/syscall.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/thread.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/arm/aarch32/thread.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/common/addr_types.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/common/addr_types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/common/ffs.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/common/ffs.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/common/sys_bitops.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/common/sys_bitops.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/common/sys_io.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/common/sys_io.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/cpu.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/cpu.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/structs.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/structs.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/arch/syscall.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/arch/syscall.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/addr.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/addr.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/att.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/att.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/bluetooth.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/bluetooth.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/buf.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/buf.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/conn.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/conn.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/controller.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/controller.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/crypto.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/crypto.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/direction.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/direction.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/gap.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/gap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/gatt.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/gatt.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/hci.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/hci.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/hci_err.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/hci_err.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/hci_vs.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/hci_vs.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/iso.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/iso.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/l2cap.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/l2cap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/uuid.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/bluetooth/uuid.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/console/console.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/console/console.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/debug/coredump.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/debug/coredump.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/debug/gcov.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/debug/gcov.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/debug/stack.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/debug/stack.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/device.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/device.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/can.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/can.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/clocks.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/clocks.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/dma.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/dma.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/fixed-partitions.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/fixed-partitions.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/gpio.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/gpio.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/io-channels.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/io-channels.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/mbox.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/mbox.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/ordinals.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/ordinals.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/pinctrl.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/pinctrl.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/pwms.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/pwms.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/reset.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/reset.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/spi.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/spi.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree/zephyr.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree/zephyr.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/devicetree.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/devicetree.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/bluetooth/hci_driver.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/bluetooth/hci_driver.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/clock_control/nrf_clock_control.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/clock_control/nrf_clock_control.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/clock_control.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/clock_control.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/console/console.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/console/console.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/console/uart_console.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/console/uart_console.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/entropy.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/entropy.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/gpio.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/gpio.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/pinctrl.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/pinctrl.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/timer/nrf_rtc_timer.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/timer/nrf_rtc_timer.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/timer/system_timer.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/timer/system_timer.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/drivers/uart.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/drivers/uart.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/dt-bindings/gpio/gpio.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/dt-bindings/gpio/gpio.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/dt-bindings/gpio/nordic-nrf-gpio.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/dt-bindings/gpio/nordic-nrf-gpio.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/dt-bindings/pinctrl/nrf-pinctrl.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/dt-bindings/pinctrl/nrf-pinctrl.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/exc_handle.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/exc_handle.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/fatal.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/fatal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/fs/fs.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/fs/fs.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/fs/fs_interface.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/fs/fs_interface.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/init.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/init.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/irq.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/irq.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/irq_offload.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/irq_offload.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel/mempool_heap.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel/mempool_heap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel/sched_priq.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel/sched_priq.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel/stats.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel/stats.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel/thread.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel/thread.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel/thread_stack.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel/thread_stack.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel_includes.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel_includes.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel_structs.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel_structs.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/kernel_version.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/kernel_version.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/linker/devicetree_regions.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/linker/devicetree_regions.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/linker/linker-defs.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/linker/linker-defs.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/linker/section_tags.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/linker/section_tags.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/linker/sections.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/linker/sections.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/linker/utils.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/linker/utils.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_backend.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_backend.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_core.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_core.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_ctrl.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_ctrl.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_instance.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_instance.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_internal.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_msg.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_msg.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/logging/log_output.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/logging/log_output.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/mgmt/mcumgr/smp_shell.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/mgmt/mcumgr/smp_shell.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/net/buf.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/net/buf.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/pm/device.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/pm/device.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/pm/device_runtime.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/pm/device_runtime.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/pm/pm.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/pm/pm.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/pm/policy.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/pm/policy.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/pm/state.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/pm/state.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/posix/posix_types.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/posix/posix_types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/posix/signal.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/posix/signal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/posix/time.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/posix/time.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/random/rand32.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/random/rand32.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/settings/settings.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/settings/settings.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_fprintf.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_fprintf.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_history.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_history.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_log_backend.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_log_backend.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_string_conv.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_string_conv.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_types.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_uart.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/shell/shell_uart.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/spinlock.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/spinlock.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sw_isr_table.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sw_isr_table.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/__assert.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/__assert.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/arch_interface.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/arch_interface.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/atomic.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/atomic.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/atomic_builtin.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/atomic_builtin.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/bitarray.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/bitarray.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/byteorder.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/byteorder.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf_cxx.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf_cxx.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf_enums.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf_enums.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf_internal.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/cbprintf_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/check.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/check.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/crc.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/crc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/device_mmio.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/device_mmio.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/dlist.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/dlist.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/errno_private.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/errno_private.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/fdtable.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/fdtable.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/heap_listener.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/heap_listener.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/kobject.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/kobject.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/libc-hooks.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/libc-hooks.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/list_gen.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/list_gen.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/math_extras.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/math_extras.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/math_extras_impl.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/math_extras_impl.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/mem_manage.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/mem_manage.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/mem_stats.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/mem_stats.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/mpsc_packet.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/mpsc_packet.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/mpsc_pbuf.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/mpsc_pbuf.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/multi_heap.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/multi_heap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/mutex.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/mutex.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/notify.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/notify.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/onoff.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/onoff.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/printk.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/printk.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/rb.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/rb.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/reboot.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/reboot.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/ring_buffer.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/ring_buffer.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/sem.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/sem.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/sflist.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/sflist.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/slist.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/slist.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/speculation.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/speculation.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/sys_heap.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/sys_heap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/sys_io.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/sys_io.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/time_units.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/time_units.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/timeutil.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/timeutil.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/util.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/util.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/util_internal.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/util_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/util_loops.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/util_loops.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys/util_macro.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys/util_macro.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/sys_clock.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/sys_clock.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/syscall.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/syscall.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/syscall_handler.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/syscall_handler.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/timeout_q.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/timeout_q.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/timing/timing.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/timing/timing.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/timing/types.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/timing/types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/toolchain/common.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/toolchain/common.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/toolchain/gcc.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/toolchain/gcc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/toolchain/zephyr_stdint.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/toolchain/zephyr_stdint.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/toolchain.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/toolchain.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracing.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracing.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracing_macros.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracing_macros.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracing_syscall.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracing_syscall.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracking.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/tracing/tracking.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/types.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/include/zephyr/wait_q.h" class="fa">/home/doki/work/ncs2/zephyr/include/zephyr/wait_q.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/banner.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/banner.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/condvar.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/condvar.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/device.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/device.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/errno.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/errno.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/fatal.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/fatal.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/idle.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/idle.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/gen_offset.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/gen_offset.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/kernel_arch_interface.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/kernel_arch_interface.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/kernel_internal.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/kernel_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/kernel_offsets.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/kernel_offsets.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/ksched.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/ksched.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/kswap.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/kswap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/include/offsets_short.h" class="fa">/home/doki/work/ncs2/zephyr/kernel/include/offsets_short.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/init.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/init.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/kheap.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/kheap.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/mailbox.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/mailbox.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/main_weak.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/main_weak.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/mem_slab.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/mem_slab.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/mempool.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/mempool.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/msg_q.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/msg_q.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/mutex.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/mutex.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/poll.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/poll.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/queue.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/queue.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/sched.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/sched.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/sem.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/sem.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/stack.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/stack.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/system_work_q.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/system_work_q.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/thread.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/thread.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/timeout.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/timeout.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/timer.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/timer.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/version.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/version.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/work.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/work.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/kernel/xip.c" class="fa">/home/doki/work/ncs2/zephyr/kernel/xip.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/assert.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/assert.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/ctype.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/ctype.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/errno.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/errno.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/fcntl.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/fcntl.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/inttypes.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/inttypes.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/limits.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/limits.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/math.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/math.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdbool.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdbool.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdint.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdint.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdio.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdio.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdlib.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/stdlib.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/string.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/string.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/_timespec.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/_timespec.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/_types.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/_types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/timespec.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/timespec.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/types.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/sys/types.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/include/time.h" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/include/time.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/math/sqrt.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/math/sqrt.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/math/sqrtf.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/math/sqrtf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/abort.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/abort.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/bsearch.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/bsearch.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/exit.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/exit.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/malloc.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/malloc.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/qsort.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/qsort.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdout/fprintf.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdout/fprintf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdout/sprintf.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdout/sprintf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdout/stdout_console.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdout/stdout_console.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strerror.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strerror.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/string.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/string.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strncasecmp.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strncasecmp.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strspn.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strspn.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/time/gmtime.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/time/gmtime.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/assert.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/assert.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/bitarray.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/bitarray.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/cbprintf.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/cbprintf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/cbprintf_complete.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/cbprintf_complete.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/cbprintf_packaged.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/cbprintf_packaged.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/crc16_sw.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/crc16_sw.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/crc32_sw.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/crc32_sw.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/crc32c_sw.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/crc32c_sw.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/crc7_sw.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/crc7_sw.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/crc8_sw.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/crc8_sw.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/dec.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/dec.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/fdtable.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/fdtable.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/heap-validate.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/heap-validate.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/heap.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/heap.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/heap.h" class="fa">/home/doki/work/ncs2/zephyr/lib/os/heap.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/hex.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/hex.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/multi_heap.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/multi_heap.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/notify.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/notify.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/onoff.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/onoff.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/printk.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/printk.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/rb.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/rb.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/reboot.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/reboot.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/ring_buffer.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/ring_buffer.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/sem.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/sem.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/thread_entry.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/thread_entry.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/os/timeutil.c" class="fa">/home/doki/work/ncs2/zephyr/lib/os/timeutil.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/posix/nanosleep.c" class="fa">/home/doki/work/ncs2/zephyr/lib/posix/nanosleep.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/posix/perror.c" class="fa">/home/doki/work/ncs2/zephyr/lib/posix/perror.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/posix/pthread_common.c" class="fa">/home/doki/work/ncs2/zephyr/lib/posix/pthread_common.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_config.h" class="fa">/home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_config.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_config_nrf52840.h" class="fa">/home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_config_nrf52840.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_glue.c" class="fa">/home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_glue.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_glue.h" class="fa">/home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_glue.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_log.h" class="fa">/home/doki/work/ncs2/zephyr/modules/hal_nordic/nrfx/nrfx_log.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/modules/segger/SEGGER_RTT_zephyr.c" class="fa">/home/doki/work/ncs2/zephyr/modules/segger/SEGGER_RTT_zephyr.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/common/cortex_m/arm_mpu_mem_cfg.h" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/common/cortex_m/arm_mpu_mem_cfg.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/common/cortex_m/arm_mpu_regions.c" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/common/cortex_m/arm_mpu_regions.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/common/pinctrl_soc.h" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/common/pinctrl_soc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/common/soc_nrf_common.S" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/common/soc_nrf_common.S</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/common/soc_nrf_common.h" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/common/soc_nrf_common.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/nrf52/power.c" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/nrf52/power.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/nrf52/soc.c" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/nrf52/soc.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/nrf52/soc.h" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/nrf52/soc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/validate_base_addresses.c" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/validate_base_addresses.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/validate_enabled_instances.c" class="fa">/home/doki/work/ncs2/zephyr/soc/arm/nordic_nrf/validate_enabled_instances.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/common/addr.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/common/addr.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/common/dummy.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/common/dummy.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/common/log.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/common/log.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/common/log.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/common/log.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/common/rpa.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/common/rpa.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/common/rpa.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/common/rpa.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/addr.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/addr.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/adv.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/adv.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/adv.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/adv.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/att.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/att.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/att_internal.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/att_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/buf.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/buf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/conn.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/conn.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/conn_internal.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/conn_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/crypto.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/crypto.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/direction_internal.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/direction_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/ecc.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/ecc.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/ecc.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/ecc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/gatt.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/gatt.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/gatt_internal.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/gatt_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_common.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_common.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_core.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_core.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_core.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_core.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_ecc.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/hci_ecc.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/id.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/id.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/id.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/id.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/iso_internal.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/iso_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/keys.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/keys.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/keys.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/keys.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/l2cap.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/l2cap.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/l2cap_internal.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/l2cap_internal.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/long_wq.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/long_wq.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/long_wq.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/long_wq.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/monitor.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/monitor.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/scan.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/scan.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/scan.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/scan.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/settings.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/settings.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/smp.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/smp.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/smp.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/smp.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/ssp.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/ssp.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/bluetooth/host/uuid.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/bluetooth/host/uuid.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/logging/log_minimal.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/logging/log_minimal.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/net/buf.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/net/buf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/net/lib/utils/addr_utils.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/net/lib/utils/addr_utils.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/pm/pm.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/pm/pm.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/pm/pm_stats.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/pm/pm_stats.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/pm/policy.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/pm/policy.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/pm/state.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/pm/state.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/random/rand32_entropy_device.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/random/rand32_entropy_device.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/backends/shell_uart.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/backends/shell_uart.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/modules/device_service.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/modules/device_service.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/modules/devmem_service.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/modules/devmem_service.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/modules/kernel_service.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/modules/kernel_service.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_cmds.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_cmds.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_fprintf.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_fprintf.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_help.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_help.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_help.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_help.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_history.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_history.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_ops.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_ops.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_ops.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_ops.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_utils.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_utils.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_utils.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_utils.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_vt100.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_vt100.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_wildcard.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_wildcard.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/shell/shell_wildcard.h" class="fa">/home/doki/work/ncs2/zephyr/subsys/shell/shell_wildcard.h</a>
+<a href="file:////home/doki/work/ncs2/zephyr/subsys/tracing/tracing_none.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/tracing/tracing_none.c</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/CMSIS#093DE61C2A7D12DC9253DAF8692F61F793A9254A#APACHE-2.0">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/CMSIS#093DE61C2A7D12DC9253DAF8692F61F793A9254A">zephyrproject-rtos/cmsis</a>
+Version:    093de61c2a7d12dc9253daf8692f61f793a9254a</div><a href="file:////home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/cmsis_compiler.h" class="fa">/home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/cmsis_compiler.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/cmsis_gcc.h" class="fa">/home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/cmsis_gcc.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/cmsis_version.h" class="fa">/home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/cmsis_version.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/core_cm4.h" class="fa">/home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/core_cm4.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/mpu_armv7.h" class="fa">/home/doki/work/ncs2/modules/hal/cmsis/CMSIS/Core/Include/mpu_armv7.h</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E#APACHE-2.0">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E">zephyrproject-rtos/hal_nordic</a>
+Version:    249199ec5a5c31d170659921048764e96d05cc0e</div><a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52.c" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52.c</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52840.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52840.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52_approtect.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52_approtect.h</a>
+</pre>
+	
+	
+	
+	<h2 id="BSD-3-CLAUSE">BSD-3-Clause</h2>
+	<div>
+		
+			
+			
+				BSD 3-Clause &#34;New&#34; or &#34;Revised&#34; License
+			
+			
+				<br /><a href="https://spdx.org/licenses/BSD-3-Clause.html">https://spdx.org/licenses/BSD-3-Clause.html</a>
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#BSD-3-CLAUSE">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</a>
+Version:    c5340c156e0ce042b21ae716906b2746a7835343</div><a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtol.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtol.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtoul.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtoul.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtoull.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/strtoull.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strstr.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/string/strstr.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/util/fnmatch/fnmatch.c" class="fa">/home/doki/work/ncs2/zephyr/lib/util/fnmatch/fnmatch.c</a>
+<a href="file:////home/doki/work/ncs2/zephyr/lib/util/fnmatch/fnmatch.h" class="fa">/home/doki/work/ncs2/zephyr/lib/util/fnmatch/fnmatch.h</a>
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E#BSD-3-CLAUSE">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E">zephyrproject-rtos/hal_nordic</a>
+Version:    249199ec5a5c31d170659921048764e96d05cc0e</div><a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrf_bitmask.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrf_bitmask.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_clock.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_clock.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_gpiote.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_gpiote.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_power_clock.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_power_clock.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_ppi.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_ppi.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_timer.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/include/nrfx_timer.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/nrfx_common.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/nrfx_common.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/nrfx_errors.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/nrfx_errors.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/src/nrfx_gpiote.c" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/src/nrfx_gpiote.c</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/src/nrfx_ppi.c" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/drivers/src/nrfx_ppi.c</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_clock.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_clock.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_common.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_common.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_gpio.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_gpio.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_gpiote.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_gpiote.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_power.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_power.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_ppi.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_ppi.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_rng.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_rng.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_rtc.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_rtc.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_timer.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_timer.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_uarte.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/hal/nrf_uarte.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/helpers/nrfx_flag32_allocator.c" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/helpers/nrfx_flag32_allocator.c</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/helpers/nrfx_flag32_allocator.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/helpers/nrfx_flag32_allocator.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/helpers/nrfx_gppi.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/helpers/nrfx_gppi.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/compiler_abstraction.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/compiler_abstraction.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf51_erratas.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf51_erratas.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf51_to_nrf52840.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf51_to_nrf52840.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52840.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52840.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52840_bitfields.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52840_bitfields.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52840_peripherals.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52840_peripherals.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52_erratas.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52_erratas.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52_to_nrf52840.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf52_to_nrf52840.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf53_erratas.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf53_erratas.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf91_erratas.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf91_erratas.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf_erratas.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf_erratas.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf_peripherals.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/nrf_peripherals.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52840.c" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/mdk/system_nrf52840.c</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/nrfx.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/nrfx.h</a>
+<a href="file:////home/doki/work/ncs2/modules/hal/nordic/nrfx/soc/nrfx_coredep.h" class="fa">/home/doki/work/ncs2/modules/hal/nordic/nrfx/soc/nrfx_coredep.h</a>
+</pre>
+	
+	
+	
+	<h2 id="CC0-1.0">CC0-1.0</h2>
+	<div>
+		
+			
+			
+				Creative Commons Zero v1.0 Universal
+			
+			
+				<br /><a href="https://spdx.org/licenses/CC0-1.0.html">https://spdx.org/licenses/CC0-1.0.html</a>
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#CC0-1.0">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</a>
+Version:    c5340c156e0ce042b21ae716906b2746a7835343</div><a href="file:////home/doki/work/ncs2/zephyr/subsys/random/rand32_xoshiro128.c" class="fa">/home/doki/work/ncs2/zephyr/subsys/random/rand32_xoshiro128.c</a>
+</pre>
+	
+	
+	
+	
+	
+	<h2 id="MIT">MIT</h2>
+	<div>
+		
+			
+			
+				MIT License
+			
+			
+				<br /><a href="https://spdx.org/licenses/MIT.html">https://spdx.org/licenses/MIT.html</a>
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#MIT">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</a>
+Version:    c5340c156e0ce042b21ae716906b2746a7835343</div><a href="file:////home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/atoi.c" class="fa">/home/doki/work/ncs2/zephyr/lib/libc/minimal/source/stdlib/atoi.c</a>
+</pre>
+	
+	
+
+	<h1>Packages details</h1>
+
+	
+	
+	<h2 id="no-package">Unknown source</h2>
+	The files from unknown source are covered by the following licenses:
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package##GPL-3.0-OR-LATER WITH GCC-EXCEPTION-3.1">GPL-3.0-or-later WITH GCC-EXCEPTION-3.1</a></li>
+		
+		
+		
+		<li><a href="#package##APACHE-2.0">Apache-2.0</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package##">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+	
+
+	
+	
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201">nrfconnect/sdk-nrf</h2>
+	<h3>Version: 45da1229c4c6d272d45eb77828aeafa0d2bdd201</h3>
+	<p>URL:
+	
+	<a href="https://github.com/nrfconnect/sdk-nrf">https://github.com/nrfconnect/sdk-nrf</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201#LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201#APACHE-2.0">Apache-2.0</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRF#45DA1229C4C6D272D45EB77828AEAFA0D2BDD201#">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8">nrfconnect/sdk-nrfxlib</h2>
+	<h3>Version: 5a16b708e83a0b210eab610a8aba0fd3e05d3ba8</h3>
+	<p>URL:
+	
+	<a href="https://github.com/nrfconnect/sdk-nrfxlib">https://github.com/nrfconnect/sdk-nrfxlib</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8#LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</a></li>
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8#NORDIC-5-CLAUSE">NORDIC-5-CLAUSE</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-NRFXLIB#5A16B708E83A0B210EAB610A8ABA0FD3E05D3BA8#">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343">nrfconnect/sdk-zephyr</h2>
+	<h3>Version: c5340c156e0ce042b21ae716906b2746a7835343</h3>
+	<p>URL:
+	
+	<a href="https://github.com/nrfconnect/sdk-zephyr">https://github.com/nrfconnect/sdk-zephyr</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#BSD-3-CLAUSE-UC">BSD-3-CLAUSE-UC</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#APACHE-2.0">Apache-2.0</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#BSD-3-CLAUSE">BSD-3-Clause</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#CC0-1.0">CC0-1.0</a></li>
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#MIT">MIT</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-ZEPHYR#C5340C156E0CE042B21AE716906B2746A7835343#">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/CMSIS#093DE61C2A7D12DC9253DAF8692F61F793A9254A">zephyrproject-rtos/cmsis</h2>
+	<h3>Version: 093de61c2a7d12dc9253daf8692f61f793a9254a</h3>
+	<p>URL:
+	
+	<a href="https://github.com/zephyrproject-rtos/cmsis">https://github.com/zephyrproject-rtos/cmsis</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/CMSIS#093DE61C2A7D12DC9253DAF8692F61F793A9254A#APACHE-2.0">Apache-2.0</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</ul>
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E">zephyrproject-rtos/hal_nordic</h2>
+	<h3>Version: 249199ec5a5c31d170659921048764e96d05cc0e</h3>
+	<p>URL:
+	
+	<a href="https://github.com/zephyrproject-rtos/hal_nordic">https://github.com/zephyrproject-rtos/hal_nordic</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E#APACHE-2.0">Apache-2.0</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/HAL_NORDIC#249199EC5A5C31D170659921048764E96D05CC0E#BSD-3-CLAUSE">BSD-3-Clause</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</ul>
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/SEGGER#D4E568A920B4BD087886170A5624C167B2D0665E">zephyrproject-rtos/segger</h2>
+	<h3>Version: d4e568a920b4bd087886170a5624c167b2d0665e</h3>
+	<p>URL:
+	
+	<a href="https://github.com/zephyrproject-rtos/segger">https://github.com/zephyrproject-rtos/segger</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/SEGGER#D4E568A920B4BD087886170A5624C167B2D0665E#LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">LicenseRef-west-ncs-sbom-BSD-1-Clause-SEGGER</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</ul>
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/TINYCRYPT#3E9A49D2672EC01435FFBF0D788DB6D95EF28DE0">zephyrproject-rtos/tinycrypt</h2>
+	<h3>Version: 3e9a49d2672ec01435ffbf0d788db6d95ef28de0</h3>
+	<p>URL:
+	
+	<a href="https://github.com/zephyrproject-rtos/tinycrypt">https://github.com/zephyrproject-rtos/tinycrypt</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/ZEPHYRPROJECT-RTOS/TINYCRYPT#3E9A49D2672EC01435FFBF0D788DB6D95EF28DE0#LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">LicenseRef-west-ncs-sbom-BSD-3-Clause-Intel</a></li>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</ul>
+	
+	
+	
+	<h1>Custom license texts</h1>
+
+	
+	<h2 id="text-LICENSEREF-NORDIC-5-CLAUSE">LicenseRef-Nordic-5-Clause</h2>
+	<pre>Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form, except as embedded into a Nordic
+   Semiconductor ASA integrated circuit in a product or a software update for
+   such product, must reproduce the above copyright notice, this list of
+   conditions and the following disclaimer in the documentation and/or other
+   materials provided with the distribution.
+
+3. Neither the name of Nordic Semiconductor ASA nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+4. This software, with or without modification, must only be used with a
+   Nordic Semiconductor ASA integrated circuit.
+
+5. Any software provided in binary form under this license must not be reverse
+   engineered, decompiled, modified and/or disassembled.
+
+THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA &#34;AS IS&#34; AND ANY EXPRESS
+OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</pre>
+	
+	<h2 id="text-LICENSEREF-WEST-NCS-SBOM-BSD-1-CLAUSE-SEGGER">LicenseRef-west-ncs-sbom-BSD-1-Clause-SEGGER</h2>
+	<pre>Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the following
+condition is met:
+
+o Redistributions of source code must retain the above copyright
+  notice, this condition and the following disclaimer.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS &#34;AS IS&#34; AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL SEGGER Microcontroller BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+</pre>
+	
+	<h2 id="text-LICENSEREF-WEST-NCS-SBOM-BSD-3-CLAUSE-INTEL">LicenseRef-west-ncs-sbom-BSD-3-Clause-Intel</h2>
+	<pre>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+
+  - Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+  - Neither the name of Intel Corporation nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &#34;AS IS&#34;
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</pre>
+	
+</body>
+
+</html>
