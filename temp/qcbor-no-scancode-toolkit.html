@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SBOM Report</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Slab&display=swap');
+		/* Nordic Default Theme */
+		body {
+			font-family: Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
+			color: #404040;
+			margin: 51px;
+			font-size: 16px;
+			background-color: white;
+		}
+		pre {
+			font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+			font-size: 12px;
+			line-height: 1.4;
+			padding: 12px;
+			border: 1px solid #e1e4e5;
+			margin: 1px 0 24px;
+			background: #f8f8f8;
+			min-width: fit-content;
+		}
+		pre.list {
+			padding: 0px 12px 12px;
+		}
+		h1 {
+			font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif;
+			border-top: 1px solid #ddd;
+			padding-top: 20px;
+			margin-top: 0px;
+			margin-bottom: 24px;
+		}
+		h2 {
+			font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif;
+			border-top: 1px solid #ddd;
+			padding-top: 24px;
+			margin-top: 0px;
+			margin-bottom: 24px;
+		}
+		a {
+			color: #00a9ce;
+			text-decoration: none;
+		}
+		a:hover {
+			color: #0077C8;
+		}
+		div, p {
+			line-height: 24px;
+			margin-block-start: 1em;
+			margin-block-end: 1em;
+			margin-inline-start: 0px;
+			margin-inline-end: 0px;
+		}
+		.src {
+			font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+			font-size: 12px;
+		}
+		.fa {
+			text-decoration: none;
+			color: #404040;
+		}
+		.fa:hover {
+			text-decoration: none;
+			color: #0077C8;
+		}
+		div.package {
+			background: #e7f2fa;
+			color: #404040;
+			padding: 8px 12px;
+			margin: 16px 0px 8px;
+			line-height: 1.7;
+			border: 1px solid #e1e4e5;
+		}
+		span.modifications {
+			font-weight: bold;
+			display: inline-block;
+			border: 1px solid #e1e4e5;
+			padding: 3px 7px 2px;
+			border-radius: 4px;
+			background-color: white;
+		}
+		div.note-header {
+			background: #6ab0de;
+			color: white;
+			font-weight: bold;
+			padding: 4px 4px 4px 12px;
+			margin-bottom: 0px;
+		}
+		div.note-content {
+			background: #e7f2fa;
+			color: #404040;
+			padding: 12px;
+			margin-top: 0px;
+		}
+		a#scroll-up {
+			line-height: normal;
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			display: block;
+			background: #6ab0de;
+			width: 56px;
+			height: 50px;
+			border-radius: 28px;
+			color: white;
+			text-align: center;
+			font-size: 30px;
+			padding-top: 6px;
+			box-shadow: 1px 3px 10px 0px #222222
+		}
+		a#scroll-up:hover {
+			box-shadow: 1px 3px 14px 3px #222222
+		}
+		span[class^="-icon-"] {
+			width: 14px;
+			height: 14px;
+			vertical-align: -1px;
+			display: inline-block;
+			background-size: 100% 100%;
+		}
+		span.-icon-exclamation {
+			background-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%3Csvg%20version%3D%221.1%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%222.5%22%20width%3D%223%22%20height%3D%227%22%20fill%3D%22%236ab0de%22%2F%3E%3Crect%20x%3D%226.5%22%20y%3D%2210.5%22%20width%3D%223%22%20height%3D%223%22%20fill%3D%22%236ab0de%22%2F%3E%3C%2Fsvg%3E');
+		}
+		/* Dark Color Theme */
+		@media (prefers-color-scheme: dark) {
+			body {
+				color: #cccccc;
+				background-color: #292929;
+			}
+			pre {
+				border: 1px solid #474747;
+				background: #333333;
+			}
+			h2, h1 {
+				border-top-color: #444444;
+			}
+			a:hover {
+				color: #66d1e9;
+			}
+			.fa {
+				color: #cccccc;
+			}
+			.fa:hover {
+				color: #66d1e9;
+			}
+			div.package {
+				background: #2c3e49;
+				color: #cccccc;
+				border: 1px solid #474747;
+			}
+			span.modifications {
+				border: 1px solid #474747;
+				background-color: #292929;
+			}
+			div.note-header, a#scroll-up {
+				background: #447291;
+			}
+			div.note-content {
+				background: #2c3e49;
+				color: #cccccc;
+			}
+		}
+		/* Visual Studio Code Color Theme */
+		html[style*="--vscode"] body {
+			color: var(--vscode-editor-foreground);
+			background-color: var(--vscode-editor-background);
+		}
+		html[style*="--vscode"] pre {
+			border: 1px solid var(--vscode-panel-border);
+			background: var(--vscode-sideBar-background);
+		}
+		html[style*="--vscode"] h2, html[style*="--vscode"] h1 {
+			border-top-color: var(--vscode-panel-border);
+		}
+		html[style*="--vscode"] a {
+			color: var(--vscode-textLink-foreground);
+			text-decoration: none;
+		}
+		html[style*="--vscode"] a:hover {
+			text-decoration: underline;
+			color: var(--vscode-textLink-activeForeground);
+		}
+		html[style*="--vscode"] .fa {
+			color: var(--vscode-foreground);
+		}
+		html[style*="--vscode"] .fa:hover {
+			text-decoration: none;
+			color: var(--vscode-textLink-activeForeground);
+		}
+		html[style*="--vscode"] div.package {
+			background: var(--vscode-quickInput-background);
+			color: var(--vscode-quickInput-foreground);
+			border: 1px solid var(--vscode-panel-border);
+		}
+		html[style*="--vscode"] span.modifications {
+			border: 1px solid var(--vscode-panel-border);
+			background-color: var(--vscode-quickInput-background);
+		}
+		html[style*="--vscode"] div.note-header, html[style*="--vscode"] a#scroll-up {
+			text-decoration: none;
+			background: var(--vscode-button-background);
+			color: var(--vscode-button-foreground);
+		}
+		html[style*="--vscode"] div.note-content {
+			background: var(--vscode-quickInput-background);
+			color: var(--vscode-quickInput-foreground);
+		}
+	</style>
+</head>
+
+<body>
+	<a id="scroll-up" href="#">▲</a>
+
+	<h1>Software Bill of Material Report</h1>
+
+	
+	<div class="note-header">
+		<span class="-icon-exclamation"></span>&nbsp; Note
+	</div>
+	<div class="note-content">
+		Some of the files in the report do no contain license information or it cannot be detected.
+		See <a href="#no-license">license details</a> for list of such files.
+		You need to evaluate them manually to get the license information.
+	</div>
+	
+
+	
+
+	<div>This report was generated from the following inputs:</div>
+	<ul>
+		
+		<li><span class="src">Files: &#34;*.[ch]&#34; (relative to &#34;/home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src&#34;)</span></li>
+		
+	</ul>
+
+	<div>The files are covered by the following licenses:</div>
+	<ul>
+		
+		
+		
+		
+		<li><a href="#BSD-3-CLAUSE">BSD-3-Clause</a></li>
+		
+		
+		
+		<li><a href="#no-license">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+
+	<div>The files are obtained from the following sources:</div>
+	<ul>
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4">nrfconnect/sdk-trusted-firmware-m, version 81e6a7fbbc972b95affc9b6805b62237d0ffd6f4</a></li>
+		
+		
+		
+	</ul>
+
+	<div>The texts of the following licenses are added to this report:</div>
+	<ul>
+		
+	</ul>
+
+	<h1 id="license-details">License details</h1>
+
+	
+	<h2 id="no-license">No license information detected</h2>
+	<div>Files without any license information or with license information that cannot be detected automatically.</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4#">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4">nrfconnect/sdk-trusted-firmware-m</a>
+Version:    81e6a7fbbc972b95affc9b6805b62237d0ffd6f4</div><a href="file:////home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/UsefulBuf.c" class="fa">/home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/UsefulBuf.c</a>
+<a href="file:////home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/qcbor_decode.c" class="fa">/home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/qcbor_decode.c</a>
+<a href="file:////home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/qcbor_encode.c" class="fa">/home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/qcbor_encode.c</a>
+</pre>
+	
+
+	
+	
+	
+	
+	<h2 id="BSD-3-CLAUSE">BSD-3-Clause</h2>
+	<div>
+		
+			
+			
+				BSD 3-Clause &#34;New&#34; or &#34;Revised&#34; License
+			
+			
+				<br /><a href="https://spdx.org/licenses/BSD-3-Clause.html">https://spdx.org/licenses/BSD-3-Clause.html</a>
+			
+			
+		
+	</div>
+	<pre class="list">
+<div class="package" id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4#BSD-3-CLAUSE">Repository: <a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4">nrfconnect/sdk-trusted-firmware-m</a>
+Version:    81e6a7fbbc972b95affc9b6805b62237d0ffd6f4</div><a href="file:////home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/ieee754.c" class="fa">/home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/ieee754.c</a>
+<a href="file:////home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/ieee754.h" class="fa">/home/doki/work/ncs/modules/tee/tf-m/trusted-firmware-m/lib/ext/qcbor/src/ieee754.h</a>
+</pre>
+	
+	
+
+	<h1>Packages details</h1>
+
+	
+
+	
+	
+	
+	
+	
+
+	<h2 id="package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4">nrfconnect/sdk-trusted-firmware-m</h2>
+	<h3>Version: 81e6a7fbbc972b95affc9b6805b62237d0ffd6f4</h3>
+	<p>URL:
+	
+	<a href="https://github.com/nrfconnect/sdk-trusted-firmware-m">https://github.com/nrfconnect/sdk-trusted-firmware-m</a>
+	
+	</p>
+	<p>The files from this source are covered by the following licenses:</p>
+	<ul>
+		
+		
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4#BSD-3-CLAUSE">BSD-3-Clause</a></li>
+		
+		
+		
+		<li><a href="#package#GIT#HTTPS://GITHUB.COM/NRFCONNECT/SDK-TRUSTED-FIRMWARE-M#81E6A7FBBC972B95AFFC9B6805B62237D0FFD6F4#">Unknown licenses</a> that cannot be detected automatically</li>
+		
+	</ul>
+	
+	
+
+	<h1>Custom license texts</h1>
+
+	
+</body>
+
+</html>
