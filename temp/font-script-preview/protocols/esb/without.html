@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enhanced ShockBurst (ESB) &mdash; nRF Connect SDK 2.5.99 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/nordic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/nrf.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+
+   
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/js/gtm-insert.js"></script>
+        <script data-culture="EN" id="CookieConsent" type="text/javascript" src="https://policy.app.cookieinformation.com/uc.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+<script
+  type="text/javascript"
+  src="../../_static/js/ncs.js"
+></script>
+<script src="../../_static/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Gazell" href="../gazell/index.html" />
+    <link rel="prev" title="Bluetooth qualification" href="../bt/bt_qualification/index.html" />
+<link
+  href="../../_static/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link
+  rel="shortcut icon"
+  href="../../_static/images/favicon.ico"
+/>
+
+</head>
+
+<body class="wy-body-for-nav">
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+  <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WF4CVFX"
+  height="0"
+  width="0"
+  style="display:none;visibility:hidden">
+  </iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="announcement-fixed">
+  <b>Important: </b>We're excited to introduce our new technical documentation platform <a href="https://docs.nordicsemi.com/">docs.nordicsemi.com</a>, currently in Beta version. We invite you to explore it and share your feedback. Read more on our <a href="https://devzone.nordicsemi.com/nordic/nordic-blog/b/blog/posts/introducing-the-unified-documentation-portal/">DevZone blog</a>. 
+</div>
+<div class="d-print-none ncs-header">
+  <div class="container-xl ncs-header-top">
+    <div class="row h-100">
+      <div class="d-none d-md-block col-2">
+        <div class="bg-white py-4 px-3 ml-2 ncs-header-logo">
+          <img
+            class="ncs-header-logo"
+            src="../../_static/images/nordic-logo.png"
+            alt=""
+          />
+        </div>
+      </div>
+      <div
+        class="col-8 col-md-7 pl-md-4 d-flex align-self-center justify-content-center"
+      >
+        <form class="w-75" action="../../search.html" method="get">
+          <div class="form-group">
+            <input
+              type="text"
+              name="q"
+              class="ncs-search-input form-control"
+              placeholder="Search all docs..."
+            />
+          </div>
+        </form>
+      </div>
+      <div class="col-4 col-md-3 d-md-block p-3 text-end">
+        <div class="dropdown">
+          <button
+            class="btn dropdown-toggle ncs-btn-versions"
+            type="button"
+            id="dropdownMenuButton1"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <span class="d-none d-md-inline">nRF Connect SDK</span>
+            <span id="ncsversion" class="d-inline"></span>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ncs-header-nav">
+    <div class="container-xl">
+      <div class="row">
+        <div class="col col-12 d-flex justify-content-center">
+          <nav class="navbar navbar-dark navbar-expand-lg p-0">
+            <span class="navbar-brand d-block d-lg-none py-2 pl-1"
+              >Documentation sets</span
+            >
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarNavAltMarkup"
+              aria-controls="navbarNavAltMarkup"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+              <ul class="navbar-nav">
+                <li class="nav-item active py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../nrf/index.html"
+                    >nRF Connect SDK</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../nrfx/index.html"
+                    >nrfx</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../nrfxlib/README.html"
+                    >nrfxlib</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../zephyr/index.html"
+                    >Zephyr Project</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../mcuboot/wrapper.html"
+                    >MCUboot</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../tfm/index.html"
+                    >Trusted Firmware-M</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../matter/index.html"
+                    >Matter</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="nav-item  py-1 px-3">
+                  <a
+                    class="nav-link"
+                    href="../../../kconfig/index.html"
+                    >Kconfig Reference</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+<a href="../../index.html">
+  nRF Connect SDK
+</a>
+  <div class="version">
+    2.5.99
+  </div>
+<div id="searchbox" role="search">
+  <div class="searchformwrapper">
+    <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+  </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_application.html">Create an application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config_and_build.html">Configuration and building</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_and_optimize.html">Testing and optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device_guides.html">Device configuration guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../security.html">Security</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../protocols.html">Protocols</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../amazon_sidewalk/index.html">Amazon Sidewalk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bt/index.html">Bluetooth</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Enhanced ShockBurst (ESB)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backward-compatibility">Backward compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#packet-transaction">Packet transaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-an-esb-application">Setting up an ESB application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequency-selection">Frequency selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pipes-and-addressing">Pipes and addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#packet-identification">Packet identification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fifos">FIFOs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ptx-fifo-handling">PTX FIFO handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prx-fifo-handling">PRX FIFO handling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#event-handling">Event handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front-end-module-support">Front-end module support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#errata-workarounds-and-nrf52832-chip-revisions">Errata workarounds and nRF52832 chip revisions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fast-ramp-up">Fast ramp-up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#experimental-feature-never-disable-transmission-stage">Experimental feature: Never disable transmission stage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gazell/index.html">Gazell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lte/index.html">LTE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../matter/index.html">Matter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../multiprotocol/index.html">Multiprotocol support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nfc/index.html">Near Field Communication (NFC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../thread/index.html">Thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../zigbee/index.html">Zigbee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wifi/index.html">Wi-Fi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coexistence/index.html">Wireless coexistence</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../applications.html">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../libraries/index.html">Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev_model_and_contributions.html">Development model and contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases_and_maturity.html">Releases and maturity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nRF Connect SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../protocols.html">Protocols</a></li>
+      <li class="breadcrumb-item active">Enhanced ShockBurst (ESB)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/protocols/esb/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="enhanced-shockburst-esb">
+<span id="ug-esb"></span><h1>Enhanced ShockBurst (ESB)<a class="headerlink" href="#enhanced-shockburst-esb" title="Permalink to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#features" id="id10">Features</a></p></li>
+<li><p><a class="reference internal" href="#resources" id="id11">Resources</a></p></li>
+<li><p><a class="reference internal" href="#backward-compatibility" id="id12">Backward compatibility</a></p></li>
+<li><p><a class="reference internal" href="#packet-transaction" id="id13">Packet transaction</a></p></li>
+<li><p><a class="reference internal" href="#setting-up-an-esb-application" id="id14">Setting up an ESB application</a></p></li>
+<li><p><a class="reference internal" href="#frequency-selection" id="id15">Frequency selection</a></p></li>
+<li><p><a class="reference internal" href="#pipes-and-addressing" id="id16">Pipes and addressing</a></p></li>
+<li><p><a class="reference internal" href="#packet-identification" id="id17">Packet identification</a></p></li>
+<li><p><a class="reference internal" href="#fifos" id="id18">FIFOs</a></p>
+<ul>
+<li><p><a class="reference internal" href="#ptx-fifo-handling" id="id19">PTX FIFO handling</a></p></li>
+<li><p><a class="reference internal" href="#prx-fifo-handling" id="id20">PRX FIFO handling</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#event-handling" id="id21">Event handling</a></p></li>
+<li><p><a class="reference internal" href="#front-end-module-support" id="id22">Front-end module support</a></p></li>
+<li><p><a class="reference internal" href="#errata-workarounds-and-nrf52832-chip-revisions" id="id23">Errata workarounds and nRF52832 chip revisions</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id24">Examples</a></p></li>
+<li><p><a class="reference internal" href="#fast-ramp-up" id="id25">Fast ramp-up</a></p></li>
+<li><p><a class="reference internal" href="#experimental-feature-never-disable-transmission-stage" id="id26">Experimental feature: Never disable transmission stage</a></p></li>
+</ul>
+</nav>
+<p>This user guide describes what Enhanced ShockBurst (ESB) is and how to use it with an nRF5 Series device.</p>
+<p>Enhanced ShockBurst (ESB) is a basic protocol supporting two-way data packet communication including packet buffering, packet acknowledgment, and automatic retransmission of lost packets.
+ESB provides radio communication with low power consumption, and the implementation is small in code size and easy to use.</p>
+<p>The ESB protocol was embedded in hardware in the legacy nRF24L Series.
+The <a class="reference internal" href="../../libraries/others/esb.html#esb-readme"><span class="std std-ref">Enhanced ShockBurst</span></a> module enables an nRF5 Series device to communicate with an nRF5 or nRF24L Series device using the ESB protocol.</p>
+<p>ESB features automatic packet transaction handling for easy implementation of a reliable bidirectional data link.
+A transaction is a packet exchange between two transceivers, with one transceiver acting as the Primary Receiver (PRX) and the other transceiver acting as the Primary Transmitter (PTX).</p>
+<figure class="align-default" id="id6">
+<img alt="Enhanced ShockBurst network" src="../../_images/esb_fig1_star_network.svg" /><figcaption>
+<p><span class="caption-text">Enhanced ShockBurst network</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="features">
+<span id="esb-features"></span><h2><a class="toc-backref" href="#id10" role="doc-backlink">Features</a><a class="headerlink" href="#features" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Supports a star network topology with typically one Primary Receiver (PRX) and up to 8 Primary Transmitters (PTX)</p></li>
+<li><p>1 to 32 bytes dynamic payload length in legacy mode</p></li>
+<li><p>1 to 252 bytes static payload length between nRF5 Series devices</p></li>
+<li><p>Bidirectional data transfer between each PTX and the PRX</p></li>
+<li><p>Packet acknowledgment and automatic packet retransmission functionality</p></li>
+<li><p>Individual TX and RX FIFOs for every pipe</p></li>
+<li><p>Backward compatible with legacy nRF24Lxx Enhanced ShockBurst</p></li>
+<li><p>Support for external front-end modules.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="resources">
+<span id="esb-config"></span><h2><a class="toc-backref" href="#id11" role="doc-backlink">Resources</a><a class="headerlink" href="#resources" title="Permalink to this heading"></a></h2>
+<p>ESB requires exclusive access to all fixed and configured resources for the <a class="reference internal" href="../../libraries/others/esb.html#esb-readme"><span class="std std-ref">Enhanced ShockBurst</span></a> library to ensure correct operation:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Resource type</p></th>
+<th class="head"><p>Resource</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Radio</p></td>
+<td><p>NRF_RADIO</p></td>
+<td><p>fixed</p></td>
+</tr>
+<tr class="row-odd"><td><p>Timer</p></td>
+<td><p>NRF_TIMER2</p></td>
+<td><p>configurable</p></td>
+</tr>
+<tr class="row-even"><td><p>DPPI/PPI channels</p></td>
+<td><p>6 channels</p></td>
+<td><p>automatically allocated</p></td>
+</tr>
+<tr class="row-odd"><td><p>Event generator unit</p></td>
+<td><p>NRF_EGU0 events 6 - 7</p></td>
+<td><p>fixed</p></td>
+</tr>
+<tr class="row-even"><td><p>Software interrupt</p></td>
+<td><p>0</p></td>
+<td><p>fixed</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no MPU enforcement of this exclusive access, so manipulating these resources gives undefined behavior.</p>
+</div>
+<p>The radio and timer interrupt handlers run at priority level 0 (highest level), and the ESB callback functions run at priority level 1.
+Other interrupts used by the application must use priority level 2 or lower (level 2 to 7) to ensure correct operation.</p>
+<p>ESB requires the <a class="reference external" href="../../../nrfxlib/mpsl/doc/mpsl.html#mpsl-lib" title="(in nrfxlib v2.5.99)"><span class="xref std std-ref">MPSL library</span></a> for front-end module support.
+This library is always linked into the build, however, it is not initialized by default to provide your application and the ESB protocol with access to all hardware resources.
+See <a class="reference internal" href="../../device_guides/working_with_fem.html#ug-radio-fem-direct-support"><span class="std std-ref">Direct support</span></a> for more details.</p>
+</section>
+<section id="backward-compatibility">
+<span id="esb-backwards"></span><h2><a class="toc-backref" href="#id12" role="doc-backlink">Backward compatibility</a><a class="headerlink" href="#backward-compatibility" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference internal" href="../../libraries/others/esb.html#esb-readme"><span class="std std-ref">Enhanced ShockBurst</span></a> library is compatible with the legacy nRFgo SDK.
+To ensure that your application built with the nRF Connect SDK can communicate with nRF24 devices that run applications built with the nRFgo SDK, use the configuration <code class="docutils literal notranslate"><span class="pre">ESB_LEGACY_CONFIG</span></code>.</p>
+<p>Note, however, that the provided samples in the two SDKs do not correspond, so that you cannot use the Transmitter sample from one SDK with the Receiver sample from the other SDK.</p>
+</section>
+<section id="packet-transaction">
+<span id="esb-transaction"></span><h2><a class="toc-backref" href="#id13" role="doc-backlink">Packet transaction</a><a class="headerlink" href="#packet-transaction" title="Permalink to this heading"></a></h2>
+<p>An Enhanced ShockBurst packet transaction is initiated by a packet transmission from the PTX and successfully completed when the PTX has received an acknowledgment packet (ACK packet) from the PRX.</p>
+<p>To enable a bidirectional data link, the PRX is allowed to attach a data payload to the ACK packet.
+To do so, the PRX adds a packet to its TX FIFO, which is sent as the payload in the next ACK packet.</p>
+<figure class="align-default" id="id7">
+<img alt="PTX to PRX packet transaction" src="../../_images/esb_fig2_ptx_trans_ok.svg" /><figcaption>
+<p><span class="caption-text">PTX to PRX packet transaction</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>If the PTX does not receive the ACK after the initial transmitted packet, it attempts to retransmit the packet until the ACK is finally being received.
+The maximum number of allowed retransmission attempts and the delay between each attempt is specified by the most recent call to either <a class="reference internal" href="../../libraries/others/esb.html#c.esb_init" title="esb_init"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_init()</span></code></a> (where the values of <a class="reference internal" href="../../libraries/others/esb.html#c.esb_config.retransmit_count" title="esb_config.retransmit_count"><code class="xref c c-member docutils literal notranslate"><span class="pre">esb_config.retransmit_count</span></code></a> and <a class="reference internal" href="../../libraries/others/esb.html#c.esb_config.retransmit_delay" title="esb_config.retransmit_delay"><code class="xref c c-member docutils literal notranslate"><span class="pre">esb_config.retransmit_delay</span></code></a> in the <a class="reference internal" href="../../libraries/others/esb.html#c.esb_config" title="esb_config"><code class="xref c c-struct docutils literal notranslate"><span class="pre">esb_config</span></code></a> structure specify the number of retransmission attempts and the delay between them, respectively) or the functions <a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_retransmit_count" title="esb_set_retransmit_count"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_retransmit_count()</span></code></a> and <a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_retransmit_delay" title="esb_set_retransmit_delay"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_retransmit_delay()</span></code></a>.
+The retransmission delay is defined as the duration between the start of each transmission attempt.
+Note that this differs from the legacy nRF24L Series hardware implementation, where the delay was defined as the duration from the end of a packet transmission until the start of the retransmission.</p>
+<p>If the ACK packet sent from the PRX to the PTX is lost, but both the initial packet and the subsequent retransmission attempts are being successfully received by the PRX, the repeated packets will be discarded by the PRX.
+This prevents the PRX application from receiving duplicate packets.
+However, repeated packets will always be ACKed by the PRX, even though they are being discarded.</p>
+<figure class="align-default" id="id8">
+<img alt="Failed package transaction" src="../../_images/esb_fig3_prx_ptx_trans_fail.svg" /><figcaption>
+<p><span class="caption-text">Failed package transaction</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>A PTX can select that individual packets that are transmitted to the PRX do not require an ACK to be sent in return from the PRX.
+This decision is taken by the application when uploading a packet to the TX FIFO using the <a class="reference internal" href="../../libraries/others/esb.html#c.esb_payload.noack" title="esb_payload.noack"><code class="xref c c-member docutils literal notranslate"><span class="pre">esb_payload.noack</span></code></a> field of the <a class="reference internal" href="../../libraries/others/esb.html#c.esb_payload" title="esb_payload"><code class="xref c c-struct docutils literal notranslate"><span class="pre">esb_payload</span></code></a> parameter that is passed to the <a class="reference internal" href="../../libraries/others/esb.html#c.esb_write_payload" title="esb_write_payload"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_write_payload()</span></code></a> function.</p>
+<p>When the PRX receives a packet that does not require an ACK, it does not send an ACK packet to the PTX, and as a result the PTX will continue retransmitting the packet until the maximum number of allowed retransmission attempts is reached.</p>
+</section>
+<section id="setting-up-an-esb-application">
+<span id="esb-getting-started"></span><h2><a class="toc-backref" href="#id14" role="doc-backlink">Setting up an ESB application</a><a class="headerlink" href="#setting-up-an-esb-application" title="Permalink to this heading"></a></h2>
+<p>Perform the following steps to set up an application to send and receive packets:</p>
+<ol class="arabic">
+<li><p>Initialize ESB using <a class="reference internal" href="../../libraries/others/esb.html#c.esb_init" title="esb_init"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_init()</span></code></a>.
+You can use the default parameters in <a class="reference internal" href="../../libraries/others/esb.html#c.ESB_DEFAULT_CONFIG" title="ESB_DEFAULT_CONFIG"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_DEFAULT_CONFIG</span></code></a> as starting point for the <code class="docutils literal notranslate"><span class="pre">p_config</span></code> parameter and reconfigure them if needed.</p></li>
+<li><p>If necessary, use any of the following functions to update the addresses, the address prefix, the channel, and the bitrate:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_base_address_0" title="esb_set_base_address_0"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_base_address_0()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_base_address_1" title="esb_set_base_address_1"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_base_address_1()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_prefixes" title="esb_set_prefixes"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_prefixes()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_rf_channel" title="esb_set_rf_channel"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_rf_channel()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_bitrate" title="esb_set_bitrate"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_bitrate()</span></code></a></p></li>
+</ul>
+</li>
+<li><p>Make sure that the high-frequency clock is running:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NRF_CLOCK</span><span class="o">-&gt;</span><span class="n">EVENTS_HFCLKSTARTED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">NRF_CLOCK</span><span class="o">-&gt;</span><span class="n">TASKS_HFCLKSTART</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">NRF_CLOCK</span><span class="o">-&gt;</span><span class="n">EVENTS_HFCLKSTARTED</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p>Start sending or receiving packets:</p>
+<ul class="simple">
+<li><p>If the node is a PTX:</p>
+<ol class="loweralpha simple">
+<li><p>Add packets to the TX FIFO by calling <a class="reference internal" href="../../libraries/others/esb.html#c.esb_write_payload" title="esb_write_payload"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_write_payload()</span></code></a>.</p></li>
+<li><p>Depending on the value of <a class="reference internal" href="../../libraries/others/esb.html#c.esb_config.tx_mode" title="esb_config.tx_mode"><code class="xref c c-member docutils literal notranslate"><span class="pre">esb_config.tx_mode</span></code></a> that was used in the most recent call to <a class="reference internal" href="../../libraries/others/esb.html#c.esb_init" title="esb_init"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_init()</span></code></a>, you might have to call <a class="reference internal" href="../../libraries/others/esb.html#c.esb_start_tx" title="esb_start_tx"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_start_tx()</span></code></a> to start the transmission.</p></li>
+<li><p>After the radio has received an acknowledgment or timed out, handle <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_TX_SUCCESS" title="ESB_EVENT_TX_SUCCESS"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_TX_SUCCESS</span></code></a>, <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_TX_FAILED" title="ESB_EVENT_TX_FAILED"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_TX_FAILED</span></code></a>, and <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_RX_RECEIVED" title="ESB_EVENT_RX_RECEIVED"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_RX_RECEIVED</span></code></a> events.</p></li>
+</ol>
+</li>
+<li><p>If the node is a PRX:</p>
+<ol class="loweralpha simple">
+<li><p>Handle <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_RX_RECEIVED" title="ESB_EVENT_RX_RECEIVED"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_RX_RECEIVED</span></code></a> events as packets are coming in.
+Multiple packets might arrive in the RX FIFO between each event.</p></li>
+<li><p>To attach payloads to acknowledgment packets, add them to the TX FIFO using <a class="reference internal" href="../../libraries/others/esb.html#c.esb_write_payload" title="esb_write_payload"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_write_payload()</span></code></a>.
+The payload must be queued before a packet is received.
+After a queued payload is sent with an acknowledgment, it is assumed that it reaches the other device.
+Therefore, an <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_TX_SUCCESS" title="ESB_EVENT_TX_SUCCESS"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_TX_SUCCESS</span></code></a> event is queued.</p></li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<p>To stop the ESB module, call <a class="reference internal" href="../../libraries/others/esb.html#c.esb_disable" title="esb_disable"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_disable()</span></code></a>.
+Note, however, that if a transaction is ongoing when you disable the module, it is not completed.
+Therefore, you might want to check if the module is idle before disabling it.</p>
+</section>
+<section id="frequency-selection">
+<span id="freq-select"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">Frequency selection</a><a class="headerlink" href="#frequency-selection" title="Permalink to this heading"></a></h2>
+<p>ESB can send or receive packets using any of the channels that the nRF5 chip can use.
+The channel is selected by calling the <a class="reference internal" href="../../libraries/others/esb.html#c.esb_set_rf_channel" title="esb_set_rf_channel"><code class="xref c c-func docutils literal notranslate"><span class="pre">esb_set_rf_channel()</span></code></a> function.</p>
+<p>The PTX and PRX must be configured to use the same frequency to exchange packets.</p>
+</section>
+<section id="pipes-and-addressing">
+<span id="esb-addressing"></span><h2><a class="toc-backref" href="#id16" role="doc-backlink">Pipes and addressing</a><a class="headerlink" href="#pipes-and-addressing" title="Permalink to this heading"></a></h2>
+<p>Each logical address on the nodes is termed a pipe.
+Each pipe maps to one on-air address that is used when transmitting or receiving packets.</p>
+<p>The on-air addresses are composed of a 2-4 byte long base address in addition to a 1 byte prefix address.
+Note that the nRF5 radio uses an alternating sequence of 0 and 1 as the preamble of the packet.
+Therefore, for packets to be received correctly, the most significant byte of the base address must not be an alternating sequence of 0 and 1, that is, it must not be 0x55 or 0xAA.</p>
+<p>Pipe 0 has its own unique base address (base address 0), while pipes 1-7 use the same base address (base address 1).
+Each of the 8 pipes have a unique byte-long prefix address.</p>
+<p>On-air, the most significant bit of each address byte is transmitted first.
+The most significant byte of the 2-4 byte long base address is the first transmitted address byte, while the prefix byte is transmitted last.</p>
+<p>Addresses cannot consist of a 0x00 prefix and an address on the format 0x00XXXXXX (length 4)/0x0000XXXX (length 5).
+Such a zero address will cause error code <code class="xref c c-macro docutils literal notranslate"><span class="pre">NRF_ERROR_INVALID_PARAM</span></code> to be returned.</p>
+<p>Note that the byte ordering in ESB and the nRF5 radio peripheral are not the same, because the address bytes are rearranged in ESB to match the nRF24L radios.</p>
+<figure class="align-default" id="id9">
+<img alt="Address part of an ESB packet" src="../../_images/esb_packet_format.svg" /><figcaption>
+<p><span class="caption-text">Address part of an ESB packet</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="packet-identification">
+<span id="esb-packet-id"></span><h2><a class="toc-backref" href="#id17" role="doc-backlink">Packet identification</a><a class="headerlink" href="#packet-identification" title="Permalink to this heading"></a></h2>
+<p>Any packet that is transmitted from a PTX to a PRX is uniquely identified by a two-bit packet ID field (PID) in the packet header together with the packet’s Cyclic Redundancy Check (CRC) field.
+This packet ID is used to distinguish a new packet from the previous packet if it has the same payload.</p>
+<p>At the PRX, retransmitted packets are discarded and not added to an RX FIFO.
+The <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_RX_RECEIVED" title="ESB_EVENT_RX_RECEIVED"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_RX_RECEIVED</span></code></a> event is not called.</p>
+<p>The CRC is used in addition to the PID to identify a unique packet.
+This reduces the likelihood of a packet being falsely identified as a retransmission attempt and discarded by the PRX when several consecutive failed packet transmission attempts occur.
+This feature is helpful as the PID is only two bits.</p>
+</section>
+<section id="fifos">
+<span id="esb-fifos"></span><h2><a class="toc-backref" href="#id18" role="doc-backlink">FIFOs</a><a class="headerlink" href="#fifos" title="Permalink to this heading"></a></h2>
+<p>On each node, there is one FIFO queue for RX and one for TX.
+The FIFOs are shared by all pipes, and <a class="reference internal" href="../../libraries/others/esb.html#c.esb_payload.pipe" title="esb_payload.pipe"><code class="xref c c-member docutils literal notranslate"><span class="pre">esb_payload.pipe</span></code></a> indicates a packet’s pipe.
+For received packets, this field specifies from which pipe the packet came.
+For transmitted packets, it specifies through which pipe the packet will be sent.</p>
+<p>When multiple packets are queued, they are handled in a FIFO fashion, ignoring pipes.</p>
+<section id="ptx-fifo-handling">
+<span id="ptx-fifo"></span><h3><a class="toc-backref" href="#id19" role="doc-backlink">PTX FIFO handling</a><a class="headerlink" href="#ptx-fifo-handling" title="Permalink to this heading"></a></h3>
+<p>When ESB is enabled in PTX mode, any packets that are uploaded to a TX FIFO will be transmitted at the next opportunity.</p>
+<p>When an ACK is successfully received from a PRX, the PTX assumes that the payload was successfully received and added to the PRX’s RX FIFO.
+The successfully transmitted packet is removed from the TX FIFO, so that the next packet in the FIFO can be transmitted.</p>
+<p>If an ACK received by a PTX contains a payload, this payload is added to the PTX’s RX FIFO.</p>
+</section>
+<section id="prx-fifo-handling">
+<span id="prx-fifo"></span><h3><a class="toc-backref" href="#id20" role="doc-backlink">PRX FIFO handling</a><a class="headerlink" href="#prx-fifo-handling" title="Permalink to this heading"></a></h3>
+<p>When ESB is enabled in PRX mode, all enabled pipes (addresses) are simultaneously monitored for incoming packets.</p>
+<p>If a new packet that was not previously added to the PRX’s RX FIFO is received, and RX FIFO has available space for the packet, the packet is added to the RX FIFO and an ACK is sent in return to the PTX.
+If the TX FIFO contains any packets, the next serviceable packet in the TX FIFO is attached as a payload in the ACK packet.
+Note that this TX packet must have been uploaded to the TX FIFO before the packet is received.</p>
+</section>
+</section>
+<section id="event-handling">
+<span id="callback-queuing"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink">Event handling</a><a class="headerlink" href="#event-handling" title="Permalink to this heading"></a></h2>
+<p>When there is an event on the radio, the <a class="reference internal" href="../../libraries/others/esb.html#esb-readme"><span class="std std-ref">Enhanced ShockBurst</span></a> module analyzes its cause and, if necessary, queues an event to the application.
+This event indicates a successful operation, a failed operation, or new data available in the RX FIFO.</p>
+<p>Events are queued as flags that are read out on the first opportunity to trigger a software interrupt.
+Therefore, there might be multiple radio interrupts between each event that is actually sent to the application.
+A single <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_TX_SUCCESS" title="ESB_EVENT_TX_SUCCESS"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_TX_SUCCESS</span></code></a> or <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_TX_FAILED" title="ESB_EVENT_TX_FAILED"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_TX_FAILED</span></code></a> event indicates one or more successful or failed operations, respectively.
+An <a class="reference internal" href="../../libraries/others/esb.html#c.esb_evt_id.ESB_EVENT_RX_RECEIVED" title="ESB_EVENT_RX_RECEIVED"><code class="xref c c-macro docutils literal notranslate"><span class="pre">ESB_EVENT_RX_RECEIVED</span></code></a> event indicates that there is at least one new packet in the RX FIFO.
+The event handler should make sure to completely empty the RX FIFO when appropriate.</p>
+</section>
+<section id="front-end-module-support">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Front-end module support</a><a class="headerlink" href="#front-end-module-support" title="Permalink to this heading"></a></h2>
+<p>The ESB protocol supports external front-end modules.
+See <a class="reference internal" href="../../device_guides/working_with_fem.html#ug-radio-fem"><span class="std std-ref">Working with RF front-end modules</span></a> for more details.</p>
+</section>
+<section id="errata-workarounds-and-nrf52832-chip-revisions">
+<span id="esb-errata"></span><h2><a class="toc-backref" href="#id23" role="doc-backlink">Errata workarounds and nRF52832 chip revisions</a><a class="headerlink" href="#errata-workarounds-and-nrf52832-chip-revisions" title="Permalink to this heading"></a></h2>
+<p>The module implementation on nRF52832 devices include a set of workarounds for hardware erratas.
+These erratas require a few hundred bytes of code space to determine runtime which workarounds are applicable to the device running the firmware.
+This is to ensure that firmware based on newer SDKs function as intended on both older and newer revision chips.
+If you know that your firmware will only on certain devices, you may save a few hundred bytes of code space by removing the workaround.
+If you are sure that you do not require support for revision 1 chips, you may remove all code blocks within if statements on the format <code class="docutils literal notranslate"><span class="pre">if((NRF_FICR-&gt;INFO.VARIANT</span> <span class="pre">&amp;</span> <span class="pre">0x0000FF00)</span> <span class="pre">==</span> <span class="pre">0x00004200)</span></code>.
+If you are sure that you do not require support for revision 2 chips, you may remove all code blocks within if statements on the format <code class="docutils literal notranslate"><span class="pre">if((NRF_FICR-&gt;INFO.VARIANT</span> <span class="pre">&amp;</span> <span class="pre">0x0000FF00)</span> <span class="pre">==</span> <span class="pre">0x00004500)</span></code>.</p>
+</section>
+<section id="examples">
+<span id="esb-users-guide-examples"></span><h2><a class="toc-backref" href="#id24" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<p>The nRF Connect SDK provides the following two samples that show how to use the ESB protocol:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../samples/esb/esb_ptx/README.html#esb-ptx"><span class="std std-ref">Enhanced ShockBurst: Transmitter</span></a></p></li>
+<li><p><a class="reference internal" href="../../samples/esb/esb_prx/README.html#esb-prx"><span class="std std-ref">Enhanced ShockBurst: Receiver</span></a></p></li>
+</ul>
+</section>
+<section id="fast-ramp-up">
+<span id="esb-fast-ramp-up"></span><h2><a class="toc-backref" href="#id25" role="doc-backlink">Fast ramp-up</a><a class="headerlink" href="#fast-ramp-up" title="Permalink to this heading"></a></h2>
+<p>The ESB driver is designed for bidirectional data transfer between devices.
+This implies that the radio peripheral is continuously switching between reception and transmission mode.
+When switching to transmission or reception mode, the radio peripheral needs some time to start internal analog components.
+On the nRF51 and nRF24L Series devices, a hardware-limited 130 µs delay is implemented.
+If the ESB connection is established only between nRF52 and/or nRF53 Series devices, this delay can be reduced to 40 µs.</p>
+<p>When the value of the <code class="docutils literal notranslate"><span class="pre">use_fast_ramp_up</span></code> parameter is <code class="docutils literal notranslate"><span class="pre">true</span></code>, fast ramp-up is enabled, resulting in reduced ramp-up delay of 40 µs.</p>
+</section>
+<section id="experimental-feature-never-disable-transmission-stage">
+<span id="esb-never-disable-tx"></span><h2><a class="toc-backref" href="#id26" role="doc-backlink">Experimental feature: Never disable transmission stage</a><a class="headerlink" href="#experimental-feature-never-disable-transmission-stage" title="Permalink to this heading"></a></h2>
+<p>If you need to reduce the delay between TX FIFO filling and reception to minimum, enabling fast ramp-up might not be sufficient.
+In this case, you can use the <a class="reference external" href="../../../kconfig/index.html#CONFIG_ESB_NEVER_DISABLE_TX" title="(in Kconfig reference v&amp;nbsp;)"><code class="xref kconfig kconfig-option docutils literal notranslate"><span class="pre">CONFIG_ESB_NEVER_DISABLE_TX</span></code></a> Kconfig option.
+It changes the ESB driver’s behavior.
+If a packet is not acknowledged, the radio peripheral remains in TXIDLE state instead of TXDISABLE when transmission is pending.
+Using this experimental feature can reduce transmission delay below 100 µs for a 32 bits (four bytes) payload.
+However, this process consumes more energy, because the radio transmitter stage remains enabled when transmission is taking place.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../gazell/index.html" class="btn btn-neutral float-right" title="Gazell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../bt/bt_qualification/index.html" class="btn btn-neutral" title="Bluetooth qualification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+
+<table>
+<tr>
+<td>
+    <p>
+        &copy; Copyright 2019-2024, Nordic Semiconductor.
+      Last updated on Feb 20, 2024.
+
+    </p>
+</td>
+<td id="nordiclogo">
+  <a href="https://www.nordicsemi.com/"><img src="../../_static/images/nordic-logo.png" border="0"/></a>
+</td>
+</tr>
+</table>
+  </div> 
+
+
+</footer>
+
+<div id="scroll-container">
+  <button type="button" id="scroll-btn" class="btn">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" fill="#fff"/></svg>
+  </button>
+</div>
+
+<script>
+  const scrollBtn = document.querySelector("#scroll-btn");
+
+  document.addEventListener("scroll", () => {
+    if (window.scrollY > 400) {
+          scrollBtn.style.visibility = "visible";
+      } else {
+          scrollBtn.style.visibility = "hidden";
+      }
+  });
+
+  scrollBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> nRF Connect SDK</span>
+       <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <div class="rst-other-version ncs">
+        <a href="../../../nrf/index.html">nRF Connect SDK</a>
+      </div>
+      
+      <div class="rst-other-version nrfx">
+        <a href="../../../nrfx/index.html">nrfx</a>
+      </div>
+      
+      <div class="rst-other-version nrfxlib">
+        <a href="../../../nrfxlib/README.html">nrfxlib</a>
+      </div>
+      
+      <div class="rst-other-version zephyr">
+        <a href="../../../zephyr/index.html">Zephyr Project</a>
+      </div>
+      
+      <div class="rst-other-version mcuboot">
+        <a href="../../../mcuboot/wrapper.html">MCUboot</a>
+      </div>
+      
+      <div class="rst-other-version tfm">
+        <a href="../../../tfm/index.html">Trusted Firmware-M</a>
+      </div>
+      
+      <div class="rst-other-version matter">
+        <a href="../../../matter/index.html">Matter</a>
+      </div>
+      
+      <div class="rst-other-version kconfig">
+        <a href="../../../kconfig/index.html">Kconfig Reference</a>
+      </div>
+    </div>
+  </div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
