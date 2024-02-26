@@ -5,50 +5,50 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Enhanced ShockBurst (ESB) &mdash; nRF Connect SDK 2.5.99 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/nordic.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/nrf.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+      <link rel="stylesheet" type="text/css" href="../../static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../static/css/nordic.css" />
+      <link rel="stylesheet" type="text/css" href="../../static/togglebutton.css" />
+      <link rel="stylesheet" type="text/css" href="../../static/copybutton.css" />
+      <link rel="stylesheet" type="text/css" href="../../static/css/nrf.css" />
+      <link rel="stylesheet" type="text/css" href="../../static/tabs.css" />
 
    
   <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
+    <script src="../../static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
-        <script src="../../_static/js/gtm-insert.js"></script>
+        <script src="../../static/jquery.js"></script>
+        <script src="../../static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../static/documentation_options.js"></script>
+        <script src="../../static/doctools.js"></script>
+        <script src="../../static/sphinx_highlight.js"></script>
+        <script src="../../static/clipboard.min.js"></script>
+        <script src="../../static/copybutton.js"></script>
+        <script src="../../static/js/gtm-insert.js"></script>
         <script data-culture="EN" id="CookieConsent" type="text/javascript" src="https://policy.app.cookieinformation.com/uc.js"></script>
         <script>let toggleHintShow = 'Click to show';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js"></script>
+        <script src="../../static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/js/theme.js"></script>
+    <script src="../../static/js/theme.js"></script>
 <script
   type="text/javascript"
-  src="../../_static/js/ncs.js"
+  src="../../static/js/ncs.js"
 ></script>
-<script src="../../_static/js/bootstrap.bundle.min.js"></script>
+<script src="../../static/js/bootstrap.bundle.min.js"></script>
 
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Gazell" href="../gazell/index.html" />
     <link rel="prev" title="Bluetooth qualification" href="../bt/bt_qualification/index.html" />
 <link
-  href="../../_static/css/bootstrap.min.css"
+  href="../../static/css/bootstrap.min.css"
   rel="stylesheet"
 />
 <link
   rel="shortcut icon"
-  href="../../_static/images/favicon.ico"
+  href="../../static/images/favicon.ico"
 />
 
 </head>
@@ -74,7 +74,7 @@
         <div class="bg-white py-4 px-3 ml-2 ncs-header-logo">
           <img
             class="ncs-header-logo"
-            src="../../_static/images/nordic-logo.png"
+            src="../../static/images/nordic-logo.png"
             alt=""
           />
         </div>
@@ -342,7 +342,7 @@ The <a class="reference internal" href="../../libraries/others/esb.html#esb-read
 <p>ESB features automatic packet transaction handling for easy implementation of a reliable bidirectional data link.
 A transaction is a packet exchange between two transceivers, with one transceiver acting as the Primary Receiver (PRX) and the other transceiver acting as the Primary Transmitter (PTX).</p>
 <figure class="align-default" id="id6">
-<img alt="Enhanced ShockBurst network" src="../../_images/esb_fig1_star_network.svg" /><figcaption>
+<img alt="Enhanced ShockBurst network" src="../../images/esb_fig1_star_network.svg" /><figcaption>
 <p><span class="caption-text">Enhanced ShockBurst network</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
@@ -416,7 +416,7 @@ To ensure that your application built with the nRF Connect SDK can communicate w
 <p>To enable a bidirectional data link, the PRX is allowed to attach a data payload to the ACK packet.
 To do so, the PRX adds a packet to its TX FIFO, which is sent as the payload in the next ACK packet.</p>
 <figure class="align-default" id="id7">
-<img alt="PTX to PRX packet transaction" src="../../_images/esb_fig2_ptx_trans_ok.svg" /><figcaption>
+<img alt="PTX to PRX packet transaction" src="../../images/esb_fig2_ptx_trans_ok.svg" /><figcaption>
 <p><span class="caption-text">PTX to PRX packet transaction</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
@@ -428,7 +428,7 @@ Note that this differs from the legacy nRF24L Series hardware implementation, wh
 This prevents the PRX application from receiving duplicate packets.
 However, repeated packets will always be ACKed by the PRX, even though they are being discarded.</p>
 <figure class="align-default" id="id8">
-<img alt="Failed package transaction" src="../../_images/esb_fig3_prx_ptx_trans_fail.svg" /><figcaption>
+<img alt="Failed package transaction" src="../../images/esb_fig3_prx_ptx_trans_fail.svg" /><figcaption>
 <p><span class="caption-text">Failed package transaction</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
@@ -505,7 +505,7 @@ The most significant byte of the 2-4 byte long base address is the first transmi
 Such a zero address will cause error code <code class="xref c c-macro docutils literal notranslate"><span class="pre">NRF_ERROR_INVALID_PARAM</span></code> to be returned.</p>
 <p>Note that the byte ordering in ESB and the nRF5 radio peripheral are not the same, because the address bytes are rearranged in ESB to match the nRF24L radios.</p>
 <figure class="align-default" id="id9">
-<img alt="Address part of an ESB packet" src="../../_images/esb_packet_format.svg" /><figcaption>
+<img alt="Address part of an ESB packet" src="../../images/esb_packet_format.svg" /><figcaption>
 <p><span class="caption-text">Address part of an ESB packet</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
@@ -623,7 +623,7 @@ However, this process consumes more energy, because the radio transmitter stage 
     </p>
 </td>
 <td id="nordiclogo">
-  <a href="https://www.nordicsemi.com/"><img src="../../_static/images/nordic-logo.png" border="0"/></a>
+  <a href="https://www.nordicsemi.com/"><img src="../../static/images/nordic-logo.png" border="0"/></a>
 </td>
 </tr>
 </table>
