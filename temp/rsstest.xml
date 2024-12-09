@@ -7,7 +7,7 @@
  <copyright>2020 Example.com All rights reserved</copyright>
  <lastBuildDate>Mon, 6 Sep 2010 00:01:00 +0000</lastBuildDate>
  <pubDate>Sun, 6 Sep 2009 16:20:00 +0000</pubDate>
- <ttl>1800</ttl>
+ <ttl>2</ttl>
 
  <item>
   <title>Example entry</title>
@@ -23,6 +23,14 @@
   <link>http://www.example.com/blog/post/1</link>
   <guid isPermaLink="false">7bd205c6-1655-4c27-aeee-53f933c5195f</guid>
   <pubDate>Sun, 7 Sep 2009 16:20:00 +0000</pubDate>
+ </item>
+
+ <item>
+  <title>Test3</title>
+  <description>This is another test.</description>
+  <link>https://doki-nordic.github.io/test-demo-docs/</link>
+  <guid isPermaLink="false">7bd205c6-1655-4c27-aeae-53f93325195f</guid>
+  <pubDate>Mon, 09 Dec 2024 12:55:00 CET</pubDate>
  </item>
 
 </channel>
